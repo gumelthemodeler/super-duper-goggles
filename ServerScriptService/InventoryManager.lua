@@ -1,113 +1,95 @@
 -- @ScriptType: Script
-
--- @ScriptType: Script
 -- @ScriptType: Script
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameData = require(ReplicatedStorage:WaitForChild("GameData"))
+local ItemData = require(ReplicatedStorage:WaitForChild("ItemData"))
+local CosmeticData = require(ReplicatedStorage:WaitForChild("CosmeticData"))
 local Network = ReplicatedStorage:WaitForChild("Network")
 local NotificationEvent = Network:WaitForChild("NotificationEvent")
+local SellValues = { Common = 10, Uncommon = 25, Rare = 75, Epic = 200, Legendary = 500, Mythical = 1500, Transcendent = 0 }
 
--- [[ TRAINING & STATS ]]
-Network:WaitForChild("TrainAction").OnServerEvent:Connect(function(player, combo, isTitan)
-	combo = tonumber(combo) or 0
-	combo = math.clamp(combo, 0, 150)
-
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local totalStats = (player:GetAttribute("Strength") or 10) + (player:GetAttribute("Defense") or 10) + (player:GetAttribute("Speed") or 10) + (player:GetAttribute("Resolve") or 10)
-
-	local baseXP = 1 + (prestige * 50) + math.floor(totalStats / 4)
-	local xpGain = math.floor(baseXP * (1.0 + (combo * 0.02)))
-
-	local targetAttr = isTitan and "TitanXP" or "XP"
-	player:SetAttribute(targetAttr, (player:GetAttribute(targetAttr) or 0) + xpGain)
-end)
-
-Network:WaitForChild("UpgradeStat").OnServerEvent:Connect(function(player, statName, amount)
-	local validStats = {
-		["Strength"]=true, ["Defense"]=true, ["Speed"]=true, ["Resolve"]=true,
-		["Titan_Power_Val"]=true, ["Titan_Speed_Val"]=true, ["Titan_Hardening_Val"]=true, 
-		["Titan_Endurance_Val"]=true, ["Titan_Precision_Val"]=true, ["Titan_Potential_Val"]=true
-	}
-	if not validStats[statName] then return end
-
-	amount = tonumber(amount) or 1
-	amount = math.clamp(amount, 1, 100)
-
-	local isTitanStat = string.match(statName, "Titan_.*_Val$")
-	local xpAttr = isTitanStat and "TitanXP" or "XP"
-
-	local currentStat = player:GetAttribute(statName) or 10
-	if type(currentStat) == "string" then currentStat = GameData.TitanRanks[currentStat] or 10 end
-
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local cleanName = statName:gsub("_Val", ""):gsub("Titan_", "")
-	local base = (prestige == 0) and (GameData.BaseStats[cleanName] or 10) or (prestige * 5)
-	local statCap = GameData.GetStatCap(prestige)
-
-	local totalCost = 0
-	local pXP = player:GetAttribute(xpAttr) or 0
-
-	for i = 0, amount - 1 do
-		if currentStat + i >= statCap then break end
-		totalCost += GameData.CalculateStatCost(currentStat + i, base, prestige)
-	end
-
-	if pXP >= totalCost and totalCost > 0 then
-		player:SetAttribute(xpAttr, pXP - totalCost)
-		player:SetAttribute(statName, currentStat + amount)
-	end
-end)
-
--- [[ PRESTIGE & SKILL TREE ]]
-local UnlockPrestigeNode = Network:FindFirstChild("UnlockPrestigeNode") or Instance.new("RemoteEvent", Network)
-UnlockPrestigeNode.Name = "UnlockPrestigeNode"
-
-UnlockPrestigeNode.OnServerEvent:Connect(function(player, nodeId)
-	local node = GameData.PrestigeNodes[nodeId]
-	if not node then return end
-
-	if player:GetAttribute("PrestigeNode_" .. nodeId) then
-		NotificationEvent:FireClient(player, "You already own this talent!", "Error")
+Network:WaitForChild("EquipItem").OnServerEvent:Connect(function(player, itemName)
+	if string.match(itemName, "^Unequip_") then
+		local slotType = string.gsub(itemName, "Unequip_", "")
+		if slotType == "Weapon" then player:SetAttribute("EquippedWeapon", "None"); player:SetAttribute("FightingStyle", "None")
+		elseif slotType == "Accessory" then player:SetAttribute("EquippedAccessory", "None") end
 		return
 	end
-
-	local points = player:GetAttribute("PrestigePoints") or 0
-	if points < node.Cost then
-		NotificationEvent:FireClient(player, "Not enough Prestige Points!", "Error")
-		return
-	end
-
-	if node.Req and not player:GetAttribute("PrestigeNode_" .. node.Req) then
-		NotificationEvent:FireClient(player, "You must unlock the previous node first!", "Error")
-		return
-	end
-
-	player:SetAttribute("PrestigePoints", points - node.Cost)
-	player:SetAttribute("PrestigeNode_" .. nodeId, true)
-
-	if node.BuffType == "FlatStat" then
-		player:SetAttribute(node.BuffStat, (player:GetAttribute(node.BuffStat) or 10) + node.BuffValue)
-	elseif node.BuffType == "Special" then
-		player:SetAttribute("Prestige_" .. node.BuffStat, (player:GetAttribute("Prestige_" .. node.BuffStat) or 0) + node.BuffValue)
-	end
-
-	NotificationEvent:FireClient(player, "Unlocked " .. node.Name .. "!", "Success")
-end)
-
-Network:WaitForChild("PrestigeEvent").OnServerEvent:Connect(function(player)
-	local currentPart = player:GetAttribute("CurrentPart") or 1
-	if currentPart > 8 then
-		if player.leaderstats and player.leaderstats:FindFirstChild("Prestige") then
-			player.leaderstats.Prestige.Value += 1
+	local itemInfo = ItemData.Equipment[itemName]
+	if itemInfo then
+		local safeName = itemName:gsub("[^%w]", "") .. "Count"
+		if (player:GetAttribute(safeName) or 0) > 0 then
+			if itemInfo.Type == "Weapon" then player:SetAttribute("EquippedWeapon", itemName); player:SetAttribute("FightingStyle", itemInfo.Style or "None")
+			elseif itemInfo.Type == "Accessory" then player:SetAttribute("EquippedAccessory", itemName) end
 		end
-		player:SetAttribute("CurrentPart", 1)
-		player:SetAttribute("CurrentWave", 1)
-		player:SetAttribute("PathsFloor", 1)
-		player:SetAttribute("PrestigePoints", (player:GetAttribute("PrestigePoints") or 0) + 1)
+	end
+end)
 
-		NotificationEvent:FireClient(player, "You have Prestiged! +1 Prestige Point acquired!", "Success")
-	else
-		NotificationEvent:FireClient(player, "You must clear the Campaign (Part 8) before you can Prestige!", "Error")
+Network:WaitForChild("SellItem").OnServerEvent:Connect(function(player, itemName, sellAll)
+	local itemInfo = ItemData.Equipment[itemName] or ItemData.Consumables[itemName]
+	if itemInfo then
+		local safeName = itemName:gsub("[^%w]", "") .. "Count"
+		local count = player:GetAttribute(safeName) or 0
+		if count > 0 then
+			local sellPrice = SellValues[itemInfo.Rarity or "Common"] or 10
+			local amountToSell = sellAll and count or 1
+			player:SetAttribute(safeName, count - amountToSell)
+			player.leaderstats.Dews.Value += (sellPrice * amountToSell)
+		end
+	end
+end)
+
+Network:WaitForChild("AutoSell").OnServerEvent:Connect(function(player, rarity)
+	local attrName = "AutoSell_" .. rarity
+	player:SetAttribute(attrName, not player:GetAttribute(attrName))
+end)
+
+Network:WaitForChild("ConsumeItem").OnServerEvent:Connect(function(player, itemName)
+	local itemInfo = ItemData.Consumables[itemName]
+	if itemInfo and itemInfo.Action then
+		local safeName = itemName:gsub("[^%w]", "") .. "Count"
+		local count = player:GetAttribute(safeName) or 0
+		if count > 0 then
+			player:SetAttribute(safeName, count - 1)
+			if itemInfo.Action == "EquipTitan" then
+				player:SetAttribute("Titan", itemInfo.TitanName)
+				NotificationEvent:FireClient(player, "Inherited the " .. itemInfo.TitanName .. "!", "Success")
+			elseif itemInfo.Buff == "Dews" then
+				local amt = math.random(itemInfo.MinAmount or 5000, itemInfo.MaxAmount or 20000)
+				player.leaderstats.Dews.Value += amt
+				NotificationEvent:FireClient(player, "Gained " .. amt .. " Dews!", "Success")
+			elseif itemInfo.Buff == "Gamepass" then
+				player:SetAttribute("Has" .. itemInfo.Unlock, true)
+				NotificationEvent:FireClient(player, "Unlocked " .. itemInfo.Unlock .. "!", "Success")
+			else
+				local expiryAttr = "Buff_" .. itemInfo.Buff .. "_Expiry"
+				player:SetAttribute(expiryAttr, os.time() + (itemInfo.Duration or 900))
+			end
+		end
+	end
+end)
+
+Network:WaitForChild("ManageStorage").OnServerEvent:Connect(function(player, gType, slotIndex)
+	slotIndex = tonumber(slotIndex)
+	if not slotIndex or slotIndex < 1 or slotIndex > 6 then return end
+	if slotIndex > 3 and not player:GetAttribute("Has" .. gType .. "Vault") then return end
+	local currentAttr = (gType == "Titan") and "Titan" or "Clan"
+	local slotAttr = currentAttr .. "_Slot" .. slotIndex
+	local currentVal = player:GetAttribute(currentAttr) or "None"
+	local slotVal = player:GetAttribute(slotAttr) or "None"
+	player:SetAttribute(currentAttr, slotVal)
+	player:SetAttribute(slotAttr, currentVal)
+end)
+
+local EquipCosmetic = Network:FindFirstChild("EquipCosmetic") or Instance.new("RemoteEvent", Network)
+EquipCosmetic.Name = "EquipCosmetic"
+EquipCosmetic.OnServerEvent:Connect(function(player, cosType, cosKey)
+	local dataPool = (cosType == "Title") and CosmeticData.Titles or CosmeticData.Auras
+	local data = dataPool[cosKey]
+	if data then
+		if CosmeticData.CheckUnlock(player, data.ReqType, data.ReqValue) then
+			player:SetAttribute("Equipped" .. cosType, cosKey)
+			NotificationEvent:FireClient(player, "Equipped " .. data.Name .. "!", "Success")
+		else NotificationEvent:FireClient(player, "You have not unlocked this cosmetic.", "Error") end
 	end
 end)

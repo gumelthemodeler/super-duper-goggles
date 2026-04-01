@@ -1,7 +1,4 @@
 -- @ScriptType: ModuleScript
-
--- @ScriptType: ModuleScript
--- @ScriptType: ModuleScript
 -- @ScriptType: ModuleScript
 local EnemyData = {}
 
@@ -16,12 +13,12 @@ EnemyData.Allies = {
 }
 
 EnemyData.RaidBosses = {
-	["Raid_Part1"] = { IsBoss = true, Name = "Female Titan", Req = 1, Health = 5000, GateType = "Hardening", GateHP = 2000, Strength = 60, Defense = 50, Speed = 65, Resolve = 60, TitanStats = {Power="A", Speed="A", Hardening="A", Endurance="B", Precision="B", Potential="B"}, Skills = {"Hardened Punch", "Nape Guard", "Leg Sweep"}, Drops = { Dews = 1000, XP = 2500, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 5, ["Scout Regiment Cloak"] = 25, ["Scout Training Manual"] = 15 } } },
-	["Raid_Part2"] = { IsBoss = true, Name = "Armored Titan", Req = 1, Health = 12000, GateType = "Reinforced Skin", GateHP = 8000, Strength = 80, Defense = 100, Speed = 30, Resolve = 70, TitanStats = {Power="B", Speed="C", Hardening="S", Endurance="A", Precision="C", Potential="C"}, Skills = {"Armored Tackle", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 2500, XP = 5000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 6, ["Advanced ODM Gear"] = 15, ["Ultrahard Steel Blades"] = 25 } } },
-	["Raid_Part3"] = { IsBoss = true, Name = "Beast Titan", Req = 1, Health = 15000, Strength = 100, Defense = 60, Speed = 40, Resolve = 85, TitanStats = {Power="S", Speed="C", Hardening="B", Endurance="A", Precision="A", Potential="A"}, Skills = {"Titan Roar", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 5000, XP = 10000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 7, ["Spinal Fluid Syringe"] = 5, ["Marleyan Armband"] = 25 } } },
-	["Raid_Part4"] = { IsBoss = true, Name = "War Hammer Titan", Req = 1, Health = 20000, GateType = "Hardening", GateHP = 15000, Strength = 150, Defense = 80, Speed = 60, Resolve = 100, TitanStats = {Power="A", Speed="B", Hardening="S", Endurance="B", Precision="A", Potential="A"}, Skills = {"War Hammer Spike", "Hardened Punch"}, Drops = { Dews = 8000, XP = 15000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 8, ["Spinal Fluid Syringe"] = 10, ["Marleyan Combat Manual"] = 25 } } },
-	["Raid_Part5"] = { IsBoss = true, Name = "Founding Titan (Eren)", Req = 1, Health = 45000, GateType = "Steam", GateHP = 5, Strength = 300, Defense = 150, Speed = 20, Resolve = 250, TitanStats = {Power="S", Speed="E", Hardening="S", Endurance="S", Precision="A", Potential="S"}, Skills = {"Coordinate Command", "Colossal Steam", "Stomp"}, Drops = { Dews = 30000, XP = 50000, ItemChance = { ["Standard Titan Serum"] = 10, ["Founder's Memory Wipe"] = 15, ["Spinal Fluid Syringe"] = 25, ["Ymir's Clay Fragment"] = 5 } } },
-	["Raid_Part8"] = { IsBoss = true, Name = "Colossal Titan", Req = 1, Health = 45000, GateType = "Steam", GateHP = 5, Strength = 400, Defense = 100, Speed = 10, Resolve = 150, TitanStats = {Power="S", Speed="E", Hardening="C", Endurance="S", Precision="E", Potential="S"}, Skills = {"Colossal Steam", "Stomp"}, Drops = { Dews = 15000, XP = 25000, ItemChance = { ["Standard Titan Serum"] = 100, ["Spinal Fluid Syringe"] = 10, ["Ymir's Clay Fragment"] = 2 } } }
+	["Raid_Part1"] = { IsBoss = true, Name = "Female Titan", Req = 1, Health = 5000, GateType = "Hardening", GateHP = 2000, Strength = 60, Defense = 50, Speed = 65, Resolve = 60, TitanStats = {Power="A", Speed="A", Hardening="A", Endurance="B", Precision="B", Potential="B"}, Skills = {"Hardened Punch", "Nape Guard", "Leg Sweep"}, Drops = { Dews = 1000, XP = 2500, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 5, ["Scout Regiment Cloak"] = 25, ["Scout Training Manual"] = 15, ["Iron Bamboo Heart"] = 5 } } },
+	["Raid_Part2"] = { IsBoss = true, Name = "Armored Titan", Req = 1, Health = 12000, GateType = "Reinforced Skin", GateHP = 8000, Strength = 80, Defense = 100, Speed = 30, Resolve = 70, TitanStats = {Power="B", Speed="C", Hardening="S", Endurance="A", Precision="C", Potential="C"}, Skills = {"Armored Tackle", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 2500, XP = 5000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 6, ["Advanced ODM Gear"] = 15, ["Ultrahard Steel Blades"] = 25, ["Iron Bamboo Heart"] = 10 } } },
+	["Raid_Part3"] = { IsBoss = true, Name = "Beast Titan", Req = 1, Health = 15000, Strength = 100, Defense = 60, Speed = 40, Resolve = 85, TitanStats = {Power="S", Speed="C", Hardening="B", Endurance="A", Precision="A", Potential="A"}, Skills = {"Titan Roar", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 5000, XP = 10000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 7, ["Spinal Fluid Syringe"] = 5, ["Marleyan Armband"] = 25, ["Iron Bamboo Heart"] = 15, ["Glowing Titan Crystal"] = 2 } } },
+	["Raid_Part4"] = { IsBoss = true, Name = "War Hammer Titan", Req = 1, Health = 20000, GateType = "Hardening", GateHP = 15000, Strength = 150, Defense = 80, Speed = 60, Resolve = 100, TitanStats = {Power="A", Speed="B", Hardening="S", Endurance="B", Precision="A", Potential="A"}, Skills = {"War Hammer Spike", "Hardened Punch"}, Drops = { Dews = 8000, XP = 15000, ItemChance = { ["Standard Titan Serum"] = 100, ["Founder's Memory Wipe"] = 8, ["Spinal Fluid Syringe"] = 10, ["Marleyan Combat Manual"] = 25, ["Iron Bamboo Heart"] = 20, ["Glowing Titan Crystal"] = 5 } } },
+	["Raid_Part5"] = { IsBoss = true, Name = "Founding Titan (Eren)", Req = 1, Health = 45000, GateType = "Steam", GateHP = 5, Strength = 300, Defense = 150, Speed = 20, Resolve = 250, TitanStats = {Power="S", Speed="E", Hardening="S", Endurance="S", Precision="A", Potential="S"}, Skills = {"Coordinate Command", "Colossal Steam", "Stomp"}, Drops = { Dews = 30000, XP = 50000, ItemChance = { ["Standard Titan Serum"] = 10, ["Founder's Memory Wipe"] = 15, ["Spinal Fluid Syringe"] = 25, ["Ymir's Clay Fragment"] = 5, ["Glowing Titan Crystal"] = 15, ["Coordinate Shard"] = 1 } } },
+	["Raid_Part8"] = { IsBoss = true, Name = "Colossal Titan", Req = 1, Health = 45000, GateType = "Steam", GateHP = 5, Strength = 400, Defense = 100, Speed = 10, Resolve = 150, TitanStats = {Power="S", Speed="E", Hardening="C", Endurance="S", Precision="E", Potential="S"}, Skills = {"Colossal Steam", "Stomp"}, Drops = { Dews = 15000, XP = 25000, ItemChance = { ["Standard Titan Serum"] = 100, ["Spinal Fluid Syringe"] = 10, ["Ymir's Clay Fragment"] = 2, ["Glowing Titan Crystal"] = 10 } } }
 }
 
 EnemyData.WorldBosses = {
@@ -29,7 +26,7 @@ EnemyData.WorldBosses = {
 		Name = "Rod Reiss (Abnormal)", Desc = "A massive, crawling monstrosity radiating intense heat. Slow, but devastatingly durable.", IsBoss = true, 
 		Health = 150000, GateHP = 0, Strength = 250, Defense = 200, Speed = 10, Resolve = 500, TitanStats = {Power="S", Speed="E", Hardening="C", Endurance="S", Precision="E", Potential="E"},
 		Skills = {"Colossal Steam", "Stomp"},
-		Drops = { XP = 100000, Dews = 50000, ItemChance = { ["Standard Titan Serum"] = 100, ["Clan Blood Vial"] = 50, ["Spinal Fluid Syringe"] = 20 } },
+		Drops = { XP = 100000, Dews = 50000, ItemChance = { ["Standard Titan Serum"] = 100, ["Clan Blood Vial"] = 50, ["Spinal Fluid Syringe"] = 20, ["Iron Bamboo Heart"] = 50, ["Glowing Titan Crystal"] = 20 } },
 		Phases = {
 			{ Health = 50000, GateType = "None", GateHP = 0, Strength = 350, Defense = 50, Speed = 5, Skills = {"Colossal Steam", "Crushed Boulders"}, Flavor = "<font color='#FFAA00'><b>Rod Reiss's face has dragged completely off! The heat is intensifying!</b></font>" }
 		}
@@ -38,7 +35,7 @@ EnemyData.WorldBosses = {
 		Name = "War Hammer (Lara)", Desc = "The true wielder of the War Hammer. Master of structural hardening and lethal spikes.", IsBoss = true,
 		Health = 250000, GateType = "Hardening", GateHP = 50000, Strength = 350, Defense = 250, Speed = 120, Resolve = 800, TitanStats = {Power="S", Speed="A", Hardening="S", Endurance="B", Precision="S", Potential="A"},
 		Skills = {"War Hammer Spike", "Hardened Punch", "Brutal Swipe"},
-		Drops = { XP = 250000, Dews = 150000, ItemChance = { ["Standard Titan Serum"] = 100, ["Clan Blood Vial"] = 75, ["Spinal Fluid Syringe"] = 40, ["Ymir's Clay Fragment"] = 10 } },
+		Drops = { XP = 250000, Dews = 150000, ItemChance = { ["Standard Titan Serum"] = 100, ["Clan Blood Vial"] = 75, ["Spinal Fluid Syringe"] = 40, ["Ymir's Clay Fragment"] = 10, ["Glowing Titan Crystal"] = 35, ["Coordinate Shard"] = 2 } },
 		Phases = {
 			{ Health = 200000, GateType = "Hardening", GateHP = 150000, Strength = 450, Defense = 400, Speed = 0, Skills = {"War Hammer Spike", "Crushed Boulders"}, Flavor = "<font color='#55FFFF'><b>Lara Tybur encases herself in a crystal underground and manifests a new Titan body remotely!</b></font>" }
 		}
@@ -47,13 +44,13 @@ EnemyData.WorldBosses = {
 		Name = "The Doomsday Titan", Desc = "Eren's skeletal monstrosity leading the Rumbling. Commands pure titans at will.", IsBoss = true,
 		Health = 1500000, GateType = "Steam", GateHP = 10, Strength = 600, Defense = 400, Speed = 50, Resolve = 1000, TitanStats = {Power="S", Speed="E", Hardening="S", Endurance="S", Precision="S", Potential="S"},
 		Skills = {"Coordinate Command", "Colossal Steam", "Stomp"},
-		Drops = { XP = 600000, Dews = 350000, ItemChance = { ["Spinal Fluid Syringe"] = 100, ["Clan Blood Vial"] = 100, ["Ymir's Clay Fragment"] = 25 } }
+		Drops = { XP = 600000, Dews = 350000, ItemChance = { ["Spinal Fluid Syringe"] = 100, ["Clan Blood Vial"] = 100, ["Ymir's Clay Fragment"] = 25, ["Glowing Titan Crystal"] = 50, ["Coordinate Shard"] = 5 } }
 	},
 	["Ymir Fritz"] = {
 		Name = "Ymir Fritz (Founder)", Desc = "The original progenitor. She molds the world in the Paths. The ultimate trial.", IsBoss = true,
 		Health = 5000000, GateType = "Hardening", GateHP = 150000, Strength = 1000, Defense = 600, Speed = 200, Resolve = 5000, TitanStats = {Power="S", Speed="S", Hardening="S", Endurance="S", Precision="S", Potential="S"},
 		Skills = {"Coordinate Command", "War Hammer Spike", "Colossal Steam", "Armored Tackle"},
-		Drops = { XP = 1500000, Dews = 1000000, ItemChance = { ["Spinal Fluid Syringe"] = 100, ["Clan Blood Vial"] = 100, ["Ymir's Clay Fragment"] = 100 } }
+		Drops = { XP = 1500000, Dews = 1000000, ItemChance = { ["Spinal Fluid Syringe"] = 100, ["Clan Blood Vial"] = 100, ["Ymir's Clay Fragment"] = 100, ["Coordinate Shard"] = 15, ["Abyssal Blood"] = 10 } }
 	}
 }
 
@@ -96,8 +93,6 @@ EnemyData.Parts = {
 			["Balance Minigame"] = { IsMinigame = "Balance", Name = "ODM Balance Training", Health = 1, GateHP = 0, Strength = 0, Defense = 0, Speed = 0, Resolve = 0, TitanStats = emptyTitans, Skills = {}, Drops = { Dews = 150, XP = 300, ItemChance = {} } },
 			["Armored Titan Dummy"] = { Name = "Armored Titan Dummy", Health = 100, GateType = "Reinforced Skin", GateHP = 50, Strength = 5, Defense = 10, Speed = 3, Resolve = 10, TitanStats = emptyTitans, Skills = {"Block"}, Drops = { Dews = 15, XP = 30, ItemChance = {["Scout Training Manual"]=1} } },
 			["Part2Boss"] = { IsBoss = true, IsHuman = true, Name = "Instructor Shadis", Health = 500, Strength = 25, Defense = 15, Speed = 30, Resolve = 50, TitanStats = emptyTitans, Skills = {"Heavy Slash", "Evasive Maneuver"}, Drops = { Dews = 150, XP = 500, ItemChance = { ["Scout Training Manual"] = 10, ["Cadet Training Blade"] = 25 } } },
-
-			-- [[ THE FIX: Added Regiment Choice pseudo-enemy to serve as the final wave ]]
 			["Regiment Selection"] = { IsMinigame = "RegimentChoice", Name = "Graduation Ceremony", Health = 1, GateHP = 0, Strength = 0, Defense = 0, Speed = 0, Resolve = 0, TitanStats = emptyTitans, Skills = {}, Drops = { Dews = 0, XP = 0, ItemChance = {} } }
 		},
 		Missions = {
@@ -107,7 +102,6 @@ EnemyData.Parts = {
 				{ Template = "Armored Titan Dummy", Flavor = "They've reinforced the nape on this one. Strike hard!" }, 
 				{ Template = "Armored Titan Dummy", Flavor = "Another armored dummy. Practice your spacing!" }, 
 				{ Template = "Part2Boss", Flavor = "<font color='#FF5555'>WARNING: Instructor Shadis wants to test your mettle personally! Don't hold back!</font>" },
-				-- [[ THE FIX: Regiment Selection is now natively part of the combat queue! ]]
 				{ Template = "Regiment Selection", Flavor = "You have survived training. It is time to pledge your heart to a Regiment." }
 			} }
 		}
@@ -146,7 +140,7 @@ EnemyData.Parts = {
 			["Anti-Personnel MP"] = { IsHuman = true, Name = "Anti-Personnel MP", Health = 200, Strength = 25, Defense = 15, Speed = 30, Resolve = 18, TitanStats = emptyTitans, Skills = {"Anti-Titan Round", "Evasive Maneuver"}, Drops = { Dews = 300, XP = 150, ItemChance = {["Anti-Personnel Pistols"]=2} } },
 			["Part4Boss"] = { 
 				IsHuman = true, IsBoss = true, Name = "Kenny's Lieutenant", Health = 1000, Strength = 60, Defense = 35, Speed = 50, Resolve = 45, TitanStats = emptyTitans, 
-				Skills = {"Anti-Titan Round", "Smoke Screen"}, Drops = { Dews = 4000, XP = 2500, ItemChance = { ["Anti-Personnel Pistols"] = 25, ["Commander's Bolo Tie"] = 5 } },
+				Skills = {"Anti-Titan Round", "Smoke Screen"}, Drops = { Dews = 4000, XP = 2500, ItemChance = { ["Anti-Personnel Pistols"] = 25, ["Commander's Bolo Tie"] = 5, ["Iron Bamboo Heart"] = 5 } },
 				Phases = {
 					{ Health = 800, GateType = "None", GateHP = 0, Strength = 85, Defense = 20, Speed = 80, Skills = {"Heavy Slash", "Evasive Maneuver"}, Flavor = "<font color='#FFAA00'><b>The Lieutenant runs out of ammo and draws her blades!</b></font>" }
 				}
@@ -169,7 +163,7 @@ EnemyData.Parts = {
 			["Marleyan Elite"] = { IsHuman = true, Name = "Marleyan Elite", Health = 450, Strength = 50, Defense = 30, Speed = 45, Resolve = 40, TitanStats = emptyTitans, Skills = {"Anti-Titan Round", "Evasive Maneuver"}, Drops = { Dews = 600, XP = 300, ItemChance = {["Anti-Personnel Pistols"]=2, ["Advanced ODM Gear"]=1} } },
 			["Part5Boss"] = { 
 				IsBoss = true, Name = "War Hammer Titan", Health = 2000, GateType = "Hardening", GateHP = 1500, Strength = 150, Defense = 80, Speed = 60, Resolve = 100, TitanStats = {Power="A", Speed="B", Hardening="S", Endurance="B", Precision="A", Potential="A"}, 
-				Skills = {"War Hammer Spike", "Hardened Punch"}, Drops = { Dews = 8000, XP = 4000, ItemChance = { ["Spinal Fluid Syringe"] = 5, ["Marleyan Combat Manual"] = 15 } },
+				Skills = {"War Hammer Spike", "Hardened Punch"}, Drops = { Dews = 8000, XP = 4000, ItemChance = { ["Spinal Fluid Syringe"] = 5, ["Marleyan Combat Manual"] = 15, ["Iron Bamboo Heart"] = 10 } },
 				Phases = {
 					{ Health = 1000, GateType = "None", GateHP = 0, Strength = 200, Defense = 50, Speed = 80, Skills = {"War Hammer Spike", "Crushed Boulders"}, Flavor = "<font color='#FFAA00'><b>The War Hammer sheds its armor for a final desperate assault!</b></font>" }
 				}
@@ -192,7 +186,7 @@ EnemyData.Parts = {
 			["Beast Titan Pitcher"] = { Name = "Beast Titan (Rock Throw)", Health = 800, Strength = 150, Defense = 60, Speed = 30, Resolve = 80, TitanStats = emptyTitans, IsLongRange = true, Skills = {"Crushed Boulders", "Block"}, Drops = { Dews = 1200, XP = 600, ItemChance = {["Thunder Spear"]=1} } },
 			["Part6Boss"] = { 
 				IsBoss = true, Name = "Armored Titan (Reiner)", Health = 2500, GateType = "Reinforced Skin", GateHP = 2500, Strength = 120, Defense = 150, Speed = 45, Resolve = 90, TitanStats = {Power="B", Speed="C", Hardening="S", Endurance="A", Precision="C", Potential="C"}, 
-				Skills = {"Armored Tackle", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 15000, XP = 5000, ItemChance = { ["Spinal Fluid Syringe"] = 2, ["Thunder Spear"] = 5 } },
+				Skills = {"Armored Tackle", "Hardened Punch", "Brutal Swipe"}, Drops = { Dews = 15000, XP = 5000, ItemChance = { ["Spinal Fluid Syringe"] = 2, ["Thunder Spear"] = 5, ["Iron Bamboo Heart"] = 15 } },
 				Phases = {
 					{ Health = 3000, GateType = "None", GateHP = 0, Strength = 180, Defense = 70, Speed = 90, Skills = {"Frenzied Thrash", "Stomp"}, Flavor = "<font color='#FF5555'><b>Reiner sheds the armor from the back of his legs! His speed has doubled!</b></font>" }
 				}
@@ -215,7 +209,7 @@ EnemyData.Parts = {
 			["Anti-Titan Artillery"] = { IsHuman = true, Name = "Anti-Titan Artillery", Health = 500, Strength = 200, Defense = 100, Speed = 10, Resolve = 100, TitanStats = emptyTitans, Skills = {"Anti-Titan Round", "Block"}, Drops = { Dews = 2500, XP = 800, ItemChance = {["Ultrahard Steel Blades"]=1} } },
 			["Part7Boss"] = { 
 				IsBoss = true, Name = "Jaw Titan (Porco)", Health = 4000, GateType = "Hardening", GateHP = 1500, Strength = 160, Defense = 80, Speed = 150, Resolve = 100, TitanStats = {Power="A", Speed="S", Hardening="B", Endurance="C", Precision="A", Potential="B"}, 
-				Skills = {"Frenzied Thrash", "Titan Bite"}, Drops = { Dews = 25000, XP = 8000, ItemChance = { ["Standard Titan Serum"] = 20, ["Advanced ODM Gear"] = 10 } },
+				Skills = {"Frenzied Thrash", "Titan Bite"}, Drops = { Dews = 25000, XP = 8000, ItemChance = { ["Standard Titan Serum"] = 20, ["Advanced ODM Gear"] = 10, ["Iron Bamboo Heart"] = 20, ["Glowing Titan Crystal"] = 2 } },
 				Phases = {
 					{ Health = 2000, GateType = "Hardening", GateHP = 500, Strength = 220, Defense = 60, Speed = 200, Skills = {"Titan Bite", "Evasive Maneuver"}, Flavor = "<font color='#FF5555'><b>Porco goes into a blind rage! His speed is unfathomable!</b></font>" }
 				}
@@ -238,7 +232,7 @@ EnemyData.Parts = {
 			["Ancient Shifter"] = { Name = "Ancient Nine Titan Husk", Health = 2000, Strength = 200, Defense = 120, Speed = 100, Resolve = 150, TitanStats = emptyTitans, Skills = {"Armored Tackle", "War Hammer Spike", "Titan Bite"}, Drops = { Dews = 1500, XP = 2000, ItemChance = {["Standard Titan Serum"]=2, ["Ymir's Clay Fragment"]=1} } },
 			["Part8Boss"] = { 
 				IsBoss = true, Name = "Founding Titan", Health = 8000, GateType = "Steam", GateHP = 3, Strength = 300, Defense = 200, Speed = 15, Resolve = 200, TitanStats = {Power="S", Speed="E", Hardening="S", Endurance="S", Precision="S", Potential="S"}, 
-				Skills = {"Coordinate Command", "Colossal Steam", "War Hammer Spike"}, Drops = { Dews = 40000, XP = 35000, ItemChance = { ["Ymir's Clay Fragment"] = 2, ["Spinal Fluid Syringe"] = 5 } },
+				Skills = {"Coordinate Command", "Colossal Steam", "War Hammer Spike"}, Drops = { Dews = 40000, XP = 35000, ItemChance = { ["Ymir's Clay Fragment"] = 2, ["Spinal Fluid Syringe"] = 5, ["Glowing Titan Crystal"] = 5 } },
 				Phases = {
 					{ Health = 4000, GateType = "Hardening", GateHP = 4000, Strength = 400, Defense = 300, Speed = 40, Skills = {"Coordinate Command", "War Hammer Spike"}, Flavor = "<font color='#FFD700'><b>Ymir interferes! The Founding Titan is covered in crystal hardening!</b></font>" }
 				}
@@ -259,8 +253,8 @@ EnemyData.PathsMemories = {
 	{ Name = "Memory of the Female Titan", Health = 8000, GateType="Hardening", GateHP=3000, Strength = 200, Defense = 100, Speed = 100, Resolve = 300, TitanStats = emptyTitans, Skills = {"Brutal Swipe", "Block"}, Drops = {XP=3000, Dews=1500} },
 	{ Name = "Memory of the Armored Titan", Health = 12000, GateType="Reinforced Skin", GateHP=6000, Strength = 150, Defense = 200, Speed = 50, Resolve = 400, TitanStats = emptyTitans, Skills = {"Armored Tackle", "Brutal Swipe"}, Drops = {XP=4000, Dews=2000} },
 	{ Name = "Memory of the Beast Titan", Health = 10000, Strength = 300, Defense = 80, Speed = 70, Resolve = 350, TitanStats = emptyTitans, IsLongRange = true, Skills = {"Crushed Boulders", "Block"}, Drops = {XP=5000, Dews=2500} },
-	{ Name = "Memory of the War Hammer", Health = 15000, GateType="Hardening", GateHP=8000, Strength = 350, Defense = 150, Speed = 90, Resolve = 500, TitanStats = emptyTitans, Skills = {"Brutal Swipe", "War Hammer Spike"}, Drops = {XP=6000, Dews=3000} },
-	{ Name = "Memory of the Colossal", Health = 25000, GateType="Steam", GateHP=6, Strength = 600, Defense = 100, Speed = 10, Resolve = 800, TitanStats = emptyTitans, Skills = {"Colossal Steam", "Stomp"}, Drops = {XP=8000, Dews=4000} }
+	{ Name = "Memory of the War Hammer", Health = 15000, GateType="Hardening", GateHP=8000, Strength = 350, Defense = 150, Speed = 90, Resolve = 500, TitanStats = emptyTitans, Skills = {"Brutal Swipe", "War Hammer Spike"}, Drops = {XP=6000, Dews=3000, ItemChance = { ["Iron Bamboo Heart"] = 5 } } },
+	{ Name = "Memory of the Colossal", Health = 25000, GateType="Steam", GateHP=6, Strength = 600, Defense = 100, Speed = 10, Resolve = 800, TitanStats = emptyTitans, Skills = {"Colossal Steam", "Stomp"}, Drops = {XP=8000, Dews=4000, ItemChance = { ["Glowing Titan Crystal"] = 2 } } }
 }
 
 -- [[ NEW: NIGHTMARE HUNTS ]]

@@ -1,113 +1,55 @@
 -- @ScriptType: Script
-
--- @ScriptType: Script
 -- @ScriptType: Script
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameData = require(ReplicatedStorage:WaitForChild("GameData"))
+local TitanData = require(ReplicatedStorage:WaitForChild("TitanData"))
 local Network = ReplicatedStorage:WaitForChild("Network")
-local NotificationEvent = Network:WaitForChild("NotificationEvent")
 
--- [[ TRAINING & STATS ]]
-Network:WaitForChild("TrainAction").OnServerEvent:Connect(function(player, combo, isTitan)
-	combo = tonumber(combo) or 0
-	combo = math.clamp(combo, 0, 150)
+local GachaRoll = Network:FindFirstChild("GachaRoll") or Instance.new("RemoteEvent", Network)
+GachaRoll.Name = "GachaRoll"
+local GachaResult = Network:FindFirstChild("GachaResult") or Instance.new("RemoteEvent", Network)
+GachaResult.Name = "GachaResult"
 
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local totalStats = (player:GetAttribute("Strength") or 10) + (player:GetAttribute("Defense") or 10) + (player:GetAttribute("Speed") or 10) + (player:GetAttribute("Resolve") or 10)
+GachaRoll.OnServerEvent:Connect(function(player, gType, isPremium)
+	local attrReq = (gType == "Titan") and (isPremium and "SpinalFluidSyringeCount" or "StandardTitanSerumCount") or "ClanBloodVialCount"
+	local itemsOwned = player:GetAttribute(attrReq) or 0
 
-	local baseXP = 1 + (prestige * 50) + math.floor(totalStats / 4)
-	local xpGain = math.floor(baseXP * (1.0 + (combo * 0.02)))
+	if itemsOwned > 0 then
+		player:SetAttribute(attrReq, itemsOwned - 1)
+		local resultName, rarity
 
-	local targetAttr = isTitan and "TitanXP" or "XP"
-	player:SetAttribute(targetAttr, (player:GetAttribute(targetAttr) or 0) + xpGain)
-end)
+		if gType == "Titan" then
+			local legPity = player:GetAttribute("TitanPity") or 0
+			local mythPity = player:GetAttribute("TitanMythicalPity") or 0
+			if isPremium then legPity += 100 end
 
-Network:WaitForChild("UpgradeStat").OnServerEvent:Connect(function(player, statName, amount)
-	local validStats = {
-		["Strength"]=true, ["Defense"]=true, ["Speed"]=true, ["Resolve"]=true,
-		["Titan_Power_Val"]=true, ["Titan_Speed_Val"]=true, ["Titan_Hardening_Val"]=true, 
-		["Titan_Endurance_Val"]=true, ["Titan_Precision_Val"]=true, ["Titan_Potential_Val"]=true
-	}
-	if not validStats[statName] then return end
+			resultName, rarity = TitanData.RollTitan(legPity, mythPity)
 
-	amount = tonumber(amount) or 1
-	amount = math.clamp(amount, 1, 100)
-
-	local isTitanStat = string.match(statName, "Titan_.*_Val$")
-	local xpAttr = isTitanStat and "TitanXP" or "XP"
-
-	local currentStat = player:GetAttribute(statName) or 10
-	if type(currentStat) == "string" then currentStat = GameData.TitanRanks[currentStat] or 10 end
-
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local cleanName = statName:gsub("_Val", ""):gsub("Titan_", "")
-	local base = (prestige == 0) and (GameData.BaseStats[cleanName] or 10) or (prestige * 5)
-	local statCap = GameData.GetStatCap(prestige)
-
-	local totalCost = 0
-	local pXP = player:GetAttribute(xpAttr) or 0
-
-	for i = 0, amount - 1 do
-		if currentStat + i >= statCap then break end
-		totalCost += GameData.CalculateStatCost(currentStat + i, base, prestige)
-	end
-
-	if pXP >= totalCost and totalCost > 0 then
-		player:SetAttribute(xpAttr, pXP - totalCost)
-		player:SetAttribute(statName, currentStat + amount)
-	end
-end)
-
--- [[ PRESTIGE & SKILL TREE ]]
-local UnlockPrestigeNode = Network:FindFirstChild("UnlockPrestigeNode") or Instance.new("RemoteEvent", Network)
-UnlockPrestigeNode.Name = "UnlockPrestigeNode"
-
-UnlockPrestigeNode.OnServerEvent:Connect(function(player, nodeId)
-	local node = GameData.PrestigeNodes[nodeId]
-	if not node then return end
-
-	if player:GetAttribute("PrestigeNode_" .. nodeId) then
-		NotificationEvent:FireClient(player, "You already own this talent!", "Error")
-		return
-	end
-
-	local points = player:GetAttribute("PrestigePoints") or 0
-	if points < node.Cost then
-		NotificationEvent:FireClient(player, "Not enough Prestige Points!", "Error")
-		return
-	end
-
-	if node.Req and not player:GetAttribute("PrestigeNode_" .. node.Req) then
-		NotificationEvent:FireClient(player, "You must unlock the previous node first!", "Error")
-		return
-	end
-
-	player:SetAttribute("PrestigePoints", points - node.Cost)
-	player:SetAttribute("PrestigeNode_" .. nodeId, true)
-
-	if node.BuffType == "FlatStat" then
-		player:SetAttribute(node.BuffStat, (player:GetAttribute(node.BuffStat) or 10) + node.BuffValue)
-	elseif node.BuffType == "Special" then
-		player:SetAttribute("Prestige_" .. node.BuffStat, (player:GetAttribute("Prestige_" .. node.BuffStat) or 0) + node.BuffValue)
-	end
-
-	NotificationEvent:FireClient(player, "Unlocked " .. node.Name .. "!", "Success")
-end)
-
-Network:WaitForChild("PrestigeEvent").OnServerEvent:Connect(function(player)
-	local currentPart = player:GetAttribute("CurrentPart") or 1
-	if currentPart > 8 then
-		if player.leaderstats and player.leaderstats:FindFirstChild("Prestige") then
-			player.leaderstats.Prestige.Value += 1
+			if rarity == "Mythical" or rarity == "Transcendent" then
+				player:SetAttribute("TitanPity", 0); player:SetAttribute("TitanMythicalPity", 0)
+			elseif rarity == "Legendary" then
+				player:SetAttribute("TitanPity", 0); player:SetAttribute("TitanMythicalPity", mythPity + 1)
+			else
+				player:SetAttribute("TitanPity", legPity + 1); player:SetAttribute("TitanMythicalPity", mythPity + 1)
+			end
+		else
+			local clanPity = player:GetAttribute("ClanPity") or 0
+			if clanPity >= 100 then
+				local premiumClans = {}
+				for cName, w in pairs(TitanData.ClanWeights) do if w <= 4.0 then table.insert(premiumClans, cName) end end
+				resultName = premiumClans[math.random(1, #premiumClans)]
+				rarity = (TitanData.ClanWeights[resultName] <= 1.5) and "Mythical" or "Legendary"
+				player:SetAttribute("ClanPity", 0)
+			else
+				resultName = TitanData.RollClan()
+				local weight = TitanData.ClanWeights[resultName] or 40
+				if weight <= 1.5 then rarity = "Mythical" elseif weight <= 4.0 then rarity = "Legendary" elseif weight <= 8.0 then rarity = "Epic" elseif weight <= 15.0 then rarity = "Rare" else rarity = "Common" end
+				if rarity == "Legendary" or rarity == "Mythical" or rarity == "Transcendent" then player:SetAttribute("ClanPity", 0) else player:SetAttribute("ClanPity", clanPity + 1) end
+			end
 		end
-		player:SetAttribute("CurrentPart", 1)
-		player:SetAttribute("CurrentWave", 1)
-		player:SetAttribute("PathsFloor", 1)
-		player:SetAttribute("PrestigePoints", (player:GetAttribute("PrestigePoints") or 0) + 1)
-
-		NotificationEvent:FireClient(player, "You have Prestiged! +1 Prestige Point acquired!", "Success")
+		player:SetAttribute(gType, resultName)
+		GachaResult:FireClient(player, gType, resultName, rarity)
 	else
-		NotificationEvent:FireClient(player, "You must clear the Campaign (Part 8) before you can Prestige!", "Error")
+		GachaResult:FireClient(player, gType, "Error", "None")
 	end
 end)

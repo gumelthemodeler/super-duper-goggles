@@ -1,113 +1,127 @@
 -- @ScriptType: Script
-
--- @ScriptType: Script
 -- @ScriptType: Script
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameData = require(ReplicatedStorage:WaitForChild("GameData"))
+local ItemData = require(ReplicatedStorage:WaitForChild("ItemData"))
+local TitanData = require(ReplicatedStorage:WaitForChild("TitanData"))
 local Network = ReplicatedStorage:WaitForChild("Network")
 local NotificationEvent = Network:WaitForChild("NotificationEvent")
 
--- [[ TRAINING & STATS ]]
-Network:WaitForChild("TrainAction").OnServerEvent:Connect(function(player, combo, isTitan)
-	combo = tonumber(combo) or 0
-	combo = math.clamp(combo, 0, 150)
+local FusionRecipes = { 
+	["Female Titan"] = { ["Founding Titan"] = "Founding Female Titan" }, 
+	["Founding Titan"] = { ["Female Titan"] = "Founding Female Titan", ["Attack Titan"] = "Founding Attack Titan" }, 
+	["Attack Titan"] = { ["Armored Titan"] = "Armored Attack Titan", ["War Hammer Titan"] = "War Hammer Attack Titan", ["Founding Titan"] = "Founding Attack Titan" }, 
+	["Armored Titan"] = { ["Attack Titan"] = "Armored Attack Titan" }, 
+	["War Hammer Titan"] = { ["Attack Titan"] = "War Hammer Attack Titan" }, 
+	["Colossal Titan"] = { ["Jaw Titan"] = "Colossal Jaw Titan" }, 
+	["Jaw Titan"] = { ["Colossal Titan"] = "Colossal Jaw Titan" } 
+}
 
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local totalStats = (player:GetAttribute("Strength") or 10) + (player:GetAttribute("Defense") or 10) + (player:GetAttribute("Speed") or 10) + (player:GetAttribute("Resolve") or 10)
+Network:WaitForChild("ForgeItem").OnServerEvent:Connect(function(player, recipeName)
+	local recipe = ItemData.ForgeRecipes[recipeName]
+	if not recipe then return end
 
-	local baseXP = 1 + (prestige * 50) + math.floor(totalStats / 4)
-	local xpGain = math.floor(baseXP * (1.0 + (combo * 0.02)))
+	local dews = player.leaderstats.Dews.Value
+	if dews < recipe.DewCost then NotificationEvent:FireClient(player, "Not enough Dews to forge this!", "Error"); return end
 
-	local targetAttr = isTitan and "TitanXP" or "XP"
-	player:SetAttribute(targetAttr, (player:GetAttribute(targetAttr) or 0) + xpGain)
+	local canForge = true
+	for reqItemName, reqAmt in pairs(recipe.ReqItems) do
+		local safeReq = reqItemName:gsub("[^%w]", "") .. "Count"
+		if (player:GetAttribute(safeReq) or 0) < reqAmt then canForge = false; break end
+	end
+	if not canForge then NotificationEvent:FireClient(player, "Missing required materials!", "Error"); return end
+
+	player.leaderstats.Dews.Value -= recipe.DewCost
+	for reqItemName, reqAmt in pairs(recipe.ReqItems) do
+		local safeReq = reqItemName:gsub("[^%w]", "") .. "Count"
+		player:SetAttribute(safeReq, (player:GetAttribute(safeReq) or 0) - reqAmt)
+	end
+	local resSafeName = recipe.Result:gsub("[^%w]", "") .. "Count"
+	player:SetAttribute(resSafeName, (player:GetAttribute(resSafeName) or 0) + 1)
+
+	local resData = ItemData.Equipment[recipe.Result] or ItemData.Consumables[recipe.Result]
+	if resData and resData.Rarity == "Transcendent" then NotificationEvent:FireAllClients("<font color='#FF55FF'><b>" .. player.Name .. " has forged the " .. recipe.Result .. "!</b></font>", "Success")
+	else NotificationEvent:FireClient(player, "Forged " .. recipe.Result .. "!", "Success") end
 end)
 
-Network:WaitForChild("UpgradeStat").OnServerEvent:Connect(function(player, statName, amount)
-	local validStats = {
-		["Strength"]=true, ["Defense"]=true, ["Speed"]=true, ["Resolve"]=true,
-		["Titan_Power_Val"]=true, ["Titan_Speed_Val"]=true, ["Titan_Hardening_Val"]=true, 
-		["Titan_Endurance_Val"]=true, ["Titan_Precision_Val"]=true, ["Titan_Potential_Val"]=true
-	}
-	if not validStats[statName] then return end
-
-	amount = tonumber(amount) or 1
-	amount = math.clamp(amount, 1, 100)
-
-	local isTitanStat = string.match(statName, "Titan_.*_Val$")
-	local xpAttr = isTitanStat and "TitanXP" or "XP"
-
-	local currentStat = player:GetAttribute(statName) or 10
-	if type(currentStat) == "string" then currentStat = GameData.TitanRanks[currentStat] or 10 end
-
-	local prestige = player.leaderstats and player.leaderstats:FindFirstChild("Prestige") and player.leaderstats.Prestige.Value or 0
-	local cleanName = statName:gsub("_Val", ""):gsub("Titan_", "")
-	local base = (prestige == 0) and (GameData.BaseStats[cleanName] or 10) or (prestige * 5)
-	local statCap = GameData.GetStatCap(prestige)
-
-	local totalCost = 0
-	local pXP = player:GetAttribute(xpAttr) or 0
-
-	for i = 0, amount - 1 do
-		if currentStat + i >= statCap then break end
-		totalCost += GameData.CalculateStatCost(currentStat + i, base, prestige)
-	end
-
-	if pXP >= totalCost and totalCost > 0 then
-		player:SetAttribute(xpAttr, pXP - totalCost)
-		player:SetAttribute(statName, currentStat + amount)
-	end
-end)
-
--- [[ PRESTIGE & SKILL TREE ]]
-local UnlockPrestigeNode = Network:FindFirstChild("UnlockPrestigeNode") or Instance.new("RemoteEvent", Network)
-UnlockPrestigeNode.Name = "UnlockPrestigeNode"
-
-UnlockPrestigeNode.OnServerEvent:Connect(function(player, nodeId)
-	local node = GameData.PrestigeNodes[nodeId]
-	if not node then return end
-
-	if player:GetAttribute("PrestigeNode_" .. nodeId) then
-		NotificationEvent:FireClient(player, "You already own this talent!", "Error")
-		return
-	end
-
-	local points = player:GetAttribute("PrestigePoints") or 0
-	if points < node.Cost then
-		NotificationEvent:FireClient(player, "Not enough Prestige Points!", "Error")
-		return
-	end
-
-	if node.Req and not player:GetAttribute("PrestigeNode_" .. node.Req) then
-		NotificationEvent:FireClient(player, "You must unlock the previous node first!", "Error")
-		return
-	end
-
-	player:SetAttribute("PrestigePoints", points - node.Cost)
-	player:SetAttribute("PrestigeNode_" .. nodeId, true)
-
-	if node.BuffType == "FlatStat" then
-		player:SetAttribute(node.BuffStat, (player:GetAttribute(node.BuffStat) or 10) + node.BuffValue)
-	elseif node.BuffType == "Special" then
-		player:SetAttribute("Prestige_" .. node.BuffStat, (player:GetAttribute("Prestige_" .. node.BuffStat) or 0) + node.BuffValue)
-	end
-
-	NotificationEvent:FireClient(player, "Unlocked " .. node.Name .. "!", "Success")
-end)
-
-Network:WaitForChild("PrestigeEvent").OnServerEvent:Connect(function(player)
-	local currentPart = player:GetAttribute("CurrentPart") or 1
-	if currentPart > 8 then
-		if player.leaderstats and player.leaderstats:FindFirstChild("Prestige") then
-			player.leaderstats.Prestige.Value += 1
+Network:WaitForChild("AwakenWeapon").OnServerEvent:Connect(function(player, weaponName)
+	local extracts = player:GetAttribute("TitanHardeningExtractCount") or 0
+	if extracts >= 1 then
+		local safeWpn = weaponName:gsub("[^%w]", "")
+		if (player:GetAttribute(safeWpn .. "Count") or 0) > 0 then
+			player:SetAttribute("TitanHardeningExtractCount", extracts - 1)
+			local possibleStats = { "DMG", "DODGE", "CRIT", "MAX HP", "SPEED", "GAS CAP", "IGNORE ARMOR" }
+			local stat1, stat2 = possibleStats[math.random(1, #possibleStats)], possibleStats[math.random(1, #possibleStats)]
+			local statStr = "+" .. math.random(5, 25) .. (stat1 == "MAX HP" and "" or "%") .. " " .. stat1 .. " | +" .. math.random(5, 25) .. (stat2 == "MAX HP" and "" or "%") .. " " .. stat2
+			player:SetAttribute(safeWpn .. "_Awakened", statStr)
+			NotificationEvent:FireClient(player, weaponName .. " Awakened!", "Success")
 		end
-		player:SetAttribute("CurrentPart", 1)
-		player:SetAttribute("CurrentWave", 1)
-		player:SetAttribute("PathsFloor", 1)
-		player:SetAttribute("PrestigePoints", (player:GetAttribute("PrestigePoints") or 0) + 1)
+	end
+end)
 
-		NotificationEvent:FireClient(player, "You have Prestiged! +1 Prestige Point acquired!", "Success")
+Network:WaitForChild("AwakenAction").OnServerEvent:Connect(function(player, actionType)
+	if actionType == "Clan" then
+		local count = player:GetAttribute("AncestralAwakeningSerumCount") or 0
+		local currentClan = player:GetAttribute("Clan") or "None"
+		local validClans = {["Ackerman"] = true, ["Yeager"] = true, ["Tybur"] = true, ["Braun"] = true, ["Galliard"] = true}
+		if count >= 1 and validClans[currentClan] then
+			player:SetAttribute("AncestralAwakeningSerumCount", count - 1); player:SetAttribute("Clan", "Awakened " .. currentClan)
+			NotificationEvent:FireClient(player, currentClan .. " Bloodline Awakened!", "Success")
+		elseif count >= 1 then NotificationEvent:FireClient(player, "Your bloodline is too weak to awaken.", "Error") end
+	elseif actionType == "Titan" then
+		local count = player:GetAttribute("YmirsClayFragmentCount") or 0
+		if count >= 1 and player:GetAttribute("Titan") == "Attack Titan" then
+			player:SetAttribute("YmirsClayFragmentCount", count - 1); player:SetAttribute("Titan", "Founding Attack Titan")
+			NotificationEvent:FireClient(player, "You have reached the Coordinate!", "Success")
+		end
+	end
+end)
+
+local FuseTitan = Network:FindFirstChild("FuseTitan") or Instance.new("RemoteEvent", Network)
+FuseTitan.Name = "FuseTitan"
+FuseTitan.OnServerEvent:Connect(function(player, baseSlot, sacSlot)
+	if not baseSlot or not sacSlot or baseSlot == sacSlot then return end
+	local validSlots = {["Equipped"] = true, ["1"] = true, ["2"] = true, ["3"] = true, ["4"] = true, ["5"] = true, ["6"] = true}
+	if not validSlots[tostring(baseSlot)] or not validSlots[tostring(sacSlot)] then return end
+
+	local dews = player.leaderstats.Dews.Value
+	if dews >= 250000 then
+		local baseAttr = (baseSlot == "Equipped") and "Titan" or ("Titan_Slot" .. baseSlot)
+		local sacAttr = (sacSlot == "Equipped") and "Titan" or ("Titan_Slot" .. sacSlot)
+
+		local baseTitan = player:GetAttribute(baseAttr) or "None"
+		local sacTitan = player:GetAttribute(sacAttr) or "None"
+		local result = FusionRecipes[baseTitan] and FusionRecipes[baseTitan][sacTitan]
+
+		if result then
+			player.leaderstats.Dews.Value -= 250000
+			player:SetAttribute(baseAttr, result)
+			player:SetAttribute(sacAttr, "None")
+			NotificationEvent:FireClient(player, "Fusion Successful! You inherited the " .. result .. "!", "Success")
+		else
+			NotificationEvent:FireClient(player, "Invalid Fusion combination.", "Error")
+		end
 	else
-		NotificationEvent:FireClient(player, "You must clear the Campaign (Part 8) before you can Prestige!", "Error")
+		NotificationEvent:FireClient(player, "Not enough Dews to fuse!", "Error")
+	end
+end)
+
+local ItemizeTitan = Network:FindFirstChild("ItemizeTitan") or Instance.new("RemoteEvent", Network)
+ItemizeTitan.Name = "ItemizeTitan"
+ItemizeTitan.OnServerEvent:Connect(function(player, slotId)
+	if not slotId then return end
+	local dews = player.leaderstats.Dews.Value
+	if dews >= 100000 then
+		local attrName = (slotId == "Equipped") and "Titan" or ("Titan_Slot" .. slotId)
+		local titanName = player:GetAttribute(attrName) or "None"
+		if titanName ~= "None" then
+			player.leaderstats.Dews.Value -= 100000
+			player:SetAttribute(attrName, "None")
+			local safeItemName = ("Itemized " .. titanName):gsub("[^%w]", "") .. "Count"
+			player:SetAttribute(safeItemName, (player:GetAttribute(safeItemName) or 0) + 1)
+			NotificationEvent:FireClient(player, "Titan extracted to your inventory!", "Success")
+		end
+	else
+		NotificationEvent:FireClient(player, "Not enough Dews to itemize!", "Error")
 	end
 end)

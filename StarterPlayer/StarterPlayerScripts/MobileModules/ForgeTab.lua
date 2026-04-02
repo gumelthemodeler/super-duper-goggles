@@ -634,6 +634,15 @@ function ForgeTab.Init(parentFrame, tooltipMgr)
 	-- [[ GLOBAL REFRESH LOGIC ]]
 	-- ==========================================
 	player.AttributeChanged:Connect(function(attr)
+		-- [[ FIX: Check Vault Slots as well as Equipped Slot for Fusion Cinematic ]]
+		if (attr == "Titan" or string.match(attr, "^Titan_Slot")) and expectedFusionResult then
+			local newTitan = player:GetAttribute(attr)
+			if newTitan == expectedFusionResult then
+				CinematicManager.Show("TITAN FUSED", newTitan, "#FFD700")
+				expectedFusionResult = nil
+			end
+		end
+
 		if string.match(attr, "Count$") or string.match(attr, "_Awakened$") or string.match(attr, "^Titan") then
 			RenderCrafting()
 			RenderAwakening()

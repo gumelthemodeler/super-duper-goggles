@@ -1,13 +1,11 @@
 -- @ScriptType: ModuleScript
-
--- @ScriptType: ModuleScript
 -- @ScriptType: ModuleScript
 local CombatCore = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SkillData = require(ReplicatedStorage:WaitForChild("SkillData"))
 local ItemData = require(ReplicatedStorage:WaitForChild("ItemData"))
 local TitanData = require(ReplicatedStorage:WaitForChild("TitanData"))
-local ClanData = require(ReplicatedStorage:WaitForChild("ClanData")) -- [[ NEW: Data Driven Clans ]]
+local ClanData = require(ReplicatedStorage:WaitForChild("ClanData"))
 
 local function GetSetBonus(playerObj)
 	local wpn = playerObj:GetAttribute("EquippedWeapon")
@@ -89,6 +87,7 @@ function CombatCore.CalculateDamage(attacker, defender, skillMult, targetLimb)
 	if defender.Statuses then
 		if (tonumber(defender.Statuses.Buff_Defense) or 0) > 0 then defBuff = 1.5 end
 		if (tonumber(defender.Statuses.Crippled) or 0) > 0 then defBuff = defBuff * 0.5 end
+		if (tonumber(defender.Statuses.Debuff_Defense) or 0) > 0 then defBuff = defBuff * 0.5 end
 	end
 
 	local atkStrength = tonumber(attacker.TotalStrength) or 10
@@ -115,7 +114,6 @@ function CombatCore.CalculateDamage(attacker, defender, skillMult, targetLimb)
 	elseif targetLimb == "Legs" or targetLimb == "Arms" then baseDmg = baseDmg * 0.5
 	elseif targetLimb == "Eyes" then baseDmg = baseDmg * 0.2 end
 
-	-- Synergy Party Attack
 	local synergyOwner = defender.SynergyOwners and defender.SynergyOwners[targetLimb]
 	if defender.Statuses and defender.Statuses["SynergyMark_" .. targetLimb] then
 		if attacker.IsPlayer and synergyOwner ~= attacker.PlayerObj.UserId then
@@ -151,14 +149,14 @@ function CombatCore.CalculateDamage(attacker, defender, skillMult, targetLimb)
 	end
 
 	effectiveArmor = math.max(0, effectiveArmor)
-	local defenseMultiplier = 1.0
 
-	-- [[ NEW: Clean Clan Buffs ]]
 	local dStats = defender.IsPlayer and ClanData.GetClanStats(defender.Clan, string.find(tostring(defender.Clan or ""), "Awakened"), defender.Titan, isDefenderTransformed) or ClanData.GetClanStats()
 	effectiveArmor = effectiveArmor * dStats.ArmorMult
 
+	local defenseMultiplier = 1.0
+
 	if attacker.IsPlayer then
-		baseDmg = baseDmg * 4.0 
+		baseDmg = baseDmg * 1.5 
 		local aStats = ClanData.GetClanStats(attacker.Clan, string.find(tostring(attacker.Clan or ""), "Awakened"), attacker.Titan, isAttackerTransformed)
 		baseDmg = baseDmg * aStats.DmgMult
 
@@ -170,8 +168,8 @@ function CombatCore.CalculateDamage(attacker, defender, skillMult, targetLimb)
 
 		defenseMultiplier = math.clamp(300 / (300 + effectiveArmor), 0.15, 1.0)
 	else
-		baseDmg = baseDmg * 0.75 
-		defenseMultiplier = math.clamp(150 / (150 + (effectiveArmor * 3)), 0.05, 1.0)
+		baseDmg = baseDmg * 0.10 
+		defenseMultiplier = math.clamp(200 / (200 + effectiveArmor), 0.05, 1.0)
 	end
 
 	if defender.IsPlayer and isDefenderTransformed then baseDmg = baseDmg * 0.50 end
@@ -179,6 +177,7 @@ function CombatCore.CalculateDamage(attacker, defender, skillMult, targetLimb)
 	if attacker.AwakenedStats and (tonumber(attacker.AwakenedStats.DmgMult) or 1.0) > 1.0 then
 		baseDmg = baseDmg * (tonumber(attacker.AwakenedStats.DmgMult) or 1.0)
 	end
+
 	if attacker.IsPlayer then
 		local prestigeDmg = tonumber(attacker.PlayerObj:GetAttribute("Prestige_DmgMult")) or 0
 		baseDmg = baseDmg * (1.0 + prestigeDmg)
@@ -191,6 +190,7 @@ function CombatCore.TakeDamage(combatant, damage, attackerStyle)
 	local actualDmg = tonumber(damage) or 0
 	local hitGate = false; local gateBroken = false; local gateName = tostring(combatant.GateType or "Shield")
 	local gateHP = tonumber(combatant.GateHP) or 0
+
 	if gateHP > 0 then
 		hitGate = true
 		if combatant.GateType == "Steam" then actualDmg = 0 
@@ -306,6 +306,7 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 	local atkSpd = tonumber(attacker.TotalSpeed) or 10
 	local defSpd = tonumber(defender.TotalSpeed) or 10
 	local atkRes = tonumber(attacker.TotalResolve) or 10
+	local defRes = tonumber(defender.TotalResolve) or 10
 
 	local aStats = attacker.IsPlayer and ClanData.GetClanStats(attacker.Clan, string.find(tostring(attacker.Clan or ""), "Awakened"), attacker.Titan, attacker.Statuses and attacker.Statuses["Transformed"]) or ClanData.GetClanStats()
 	local dStats = defender.IsPlayer and ClanData.GetClanStats(defender.Clan, string.find(tostring(defender.Clan or ""), "Awakened"), defender.Titan, defender.Statuses and defender.Statuses["Transformed"]) or ClanData.GetClanStats()
@@ -313,6 +314,7 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 	atkSpd = atkSpd * aStats.SpdMult
 	atkRes = atkRes * aStats.ResolveMult
 	defSpd = defSpd * dStats.SpdMult
+	defRes = defRes * dStats.ResolveMult
 
 	for i = 1, hitsToDo do
 		local currentDefHP = tonumber(defender.HP) or 0
@@ -325,10 +327,12 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 			if (tonumber(defender.Statuses.Immobilized) or 0) > 0 then defSpd = 0 end
 		end
 
-		local dodgeChance = math.clamp(5 + (defSpd - atkSpd) * 0.2, 5, 35) 
+		-- [[ FIX: Smoothed Speed scaling ]]
+		local dodgeChance = 5 + ((defSpd - atkSpd) * 0.08) 
 
+		-- [[ FIX: Heavily nerfed Nape dodge penalty ]]
 		local targetCrip = defender.Statuses and (tonumber(defender.Statuses.Crippled) or 0) > 0
-		if targetLimb == "Nape" and not targetCrip then dodgeChance = dodgeChance + 35 end
+		if targetLimb == "Nape" and not targetCrip then dodgeChance = dodgeChance + 15 end
 
 		dodgeChance += dStats.DodgeBonus
 
@@ -352,18 +356,26 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 
 		if titanNameCheck ~= "" then
 			if string.find(titanNameCheck, "Founding Titan") or string.find(titanNameCheck, "Colossal") then
-				dodgeChance = dodgeChance - 60 
+				dodgeChance = dodgeChance - 40 
 			elseif string.find(titanNameCheck, "Beast Titan") then
-				dodgeChance = dodgeChance - 25 
+				dodgeChance = dodgeChance - 20 
 			elseif string.find(titanNameCheck, "Armored Titan") then
 				dodgeChance = dodgeChance - 15 
 			elseif string.find(titanNameCheck, "Female Titan") then
-				dodgeChance = dodgeChance - 12
+				dodgeChance = dodgeChance - 10
 			end
 		end
 
-		dodgeChance = math.clamp(dodgeChance or 0, 0, 80)
-		if isDodging then dodgeChance = 100 end
+		if isDodging then 
+			dodgeChance = 100 
+		elseif not defender.IsPlayer then
+			-- [[ FIX: Bosses Hard Capped to 20% Dodge so they can't RNG spam ]]
+			dodgeChance = math.clamp(dodgeChance, 0, 20)
+		else
+			-- Players can scale to 75%
+			dodgeChance = math.clamp(dodgeChance, 0, 75)
+		end
+
 		if defender.Statuses and (tonumber(defender.Statuses.Immobilized) or 0) > 0 then dodgeChance = 0 end
 
 		if math.random(1, 100) <= (dodgeChance or 0) then
@@ -377,15 +389,20 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 
 		didHitAtAll = true
 
-		local critChance = math.clamp(5 + (atkRes * 0.5), 5, 75)
+		-- [[ FIX: Smoothed Crit scaling ]]
+		local critChance = 5 + ((atkRes - defRes) * 0.10)
+
 		if attacker.AwakenedStats and (tonumber(attacker.AwakenedStats.CritBonus) or 0) > 0 then critChance = critChance + tonumber(attacker.AwakenedStats.CritBonus) end
 
 		if attacker.IsPlayer then
 			critChance += aStats.CritBonus
 			critChance = critChance + (tonumber(attacker.PlayerObj:GetAttribute("Prestige_CritBonus")) or 0)
-
 			local setBonus = GetSetBonus(attacker.PlayerObj)
 			if setBonus and setBonus.CritBonus then critChance = critChance + setBonus.CritBonus end
+			critChance = math.clamp(critChance, 5, 75)
+		else
+			-- [[ FIX: Bosses Hard Capped to 25% Crit so they don't randomly wipe you ]]
+			critChance = math.clamp(critChance, 5, 25)
 		end
 
 		local isCrit = math.random(1, 100) <= (critChance or 0)
@@ -399,9 +416,7 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 
 		if attacker.Name == "Doomsday Apparition" and defender.IsPlayer then
 			defender.Gas = math.max(0, (tonumber(defender.Gas) or 0) - 15)
-			if defender.TitanEnergy then
-				defender.TitanEnergy = math.max(0, (tonumber(defender.TitanEnergy) or 0) - 15)
-			end
+			if defender.TitanEnergy then defender.TitanEnergy = math.max(0, (tonumber(defender.TitanEnergy) or 0) - 15) end
 			if not defender.Statuses then defender.Statuses = {} end
 			defender.Statuses["Burn"] = math.max((tonumber(defender.Statuses["Burn"]) or 0), 2)
 			effectLog = effectLog .. " <font color='#FFAA00'>[DOOMSDAY AURA: Sapped 15 Gas/Heat & Inflicted Burn!]</font>"
@@ -436,14 +451,6 @@ function CombatCore.ExecuteStrike(attacker, defender, skillName, targetLimb, log
 					local healAmt = maxHP * 0.15
 					attacker.HP = math.min(maxHP, pHP + healAmt)
 					effectLog = effectLog .. " <font color='#55FF55'>[+40 HEAT | +15% HP]</font>"
-
-					if math.random(1, 100) <= 5 and not defender.IsPlayer then
-						local stolenTrait = TitanData.RollTrait()
-						if stolenTrait and stolenTrait ~= "None" then
-							attacker.PlayerObj:SetAttribute("TitanTrait", stolenTrait)
-							effectLog = effectLog .. " <font color='#FF3333'><b>[TRAIT STOLEN: " .. stolenTrait:upper() .. "!]</b></font>"
-						end
-					end
 				end
 			else
 				local currentEffect = tonumber(defender.Statuses[safeEffect]) or 0

@@ -5,7 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HttpService = game:GetService("HttpService")
 local RemotesFolder = ReplicatedStorage:WaitForChild("Network")
 
--- GUARANTEE REMOTES EXIST SO NO INFINITE YIELDS HAPPEN
 local TradeAction = RemotesFolder:FindFirstChild("TradeAction") or Instance.new("RemoteEvent", RemotesFolder); TradeAction.Name = "TradeAction"
 local TradeRequest = RemotesFolder:FindFirstChild("TradeRequest") or Instance.new("RemoteEvent", RemotesFolder); TradeRequest.Name = "TradeRequest"
 local TradeUpdate = RemotesFolder:FindFirstChild("TradeUpdate") or Instance.new("RemoteEvent", RemotesFolder); TradeUpdate.Name = "TradeUpdate"
@@ -14,7 +13,7 @@ local ItemData = require(ReplicatedStorage:WaitForChild("ItemData"))
 
 local ActiveTrades = {} 
 local TradeRequests = {} 
-local RateLimits = {} -- [[ ANTI-SPAM DICTIONARY ]]
+local RateLimits = {} 
 
 local MAX_INVENTORY_CAPACITY = 50
 
@@ -61,7 +60,6 @@ local function ExecuteTrade(tradeId)
 	local trade = ActiveTrades[tradeId]
 	if not trade then return end
 
-	-- [[ STRICT VALIDATION: Runs exactly at the moment of execution to prevent race-condition duping ]]
 	local function ValidateOffer(plr, offer)
 		if plr.leaderstats.Dews.Value < offer.Dews then return false, "Not enough Dews." end
 		for itemName, amount in pairs(offer.Items) do
@@ -104,7 +102,6 @@ local function ExecuteTrade(tradeId)
 		return
 	end
 
-	-- [[ ATOMIC TRANSFER ]]
 	trade.P1.leaderstats.Dews.Value -= trade.P1Offer.Dews
 	for itemName, amount in pairs(trade.P1Offer.Items) do
 		local safeName = itemName:gsub("[^%w]", "") .. "Count"
@@ -140,7 +137,6 @@ local function ExecuteTrade(tradeId)
 	local p1GivesItems = FormatItems(trade.P1Offer.Items)
 	local p2GivesItems = FormatItems(trade.P2Offer.Items)
 
-	-- 1. Anti-Scam Console Logger
 	print("[TRADE SECURE LOG] " .. trade.P1.Name .. " traded [" .. p1GivesItems .. " | " .. trade.P1Offer.Dews .. " Dews] TO " .. trade.P2.Name .. " FOR [" .. p2GivesItems .. " | " .. trade.P2Offer.Dews .. " Dews]")
 
 	local p1ReceivedMsg = "Trade Processed! Received: " .. p2GivesItems
@@ -167,10 +163,9 @@ local function ResetTradeState(trade)
 end
 
 RemotesFolder:WaitForChild("TradeAction").OnServerEvent:Connect(function(player, action, data)
-	-- [[ ANTI-SPAM DEBOUNCE ]]
 	local now = os.clock()
 	local lastCall = RateLimits[player.UserId] or 0
-	if now - lastCall < 0.1 then return end -- Drops requests if sent faster than 10 times a second
+	if now - lastCall < 0.1 then return end 
 	RateLimits[player.UserId] = now
 
 	local tradeId, trade = GetTradeForPlayer(player)
@@ -179,7 +174,12 @@ RemotesFolder:WaitForChild("TradeAction").OnServerEvent:Connect(function(player,
 		if trade then RemotesFolder.NotificationEvent:FireClient(player, "You are already in a trade!", "Error") return end
 		local target = Players:FindFirstChild(tostring(data))
 		if not target or target == player then return end
-		if GetTradeForPlayer(target) or target:GetAttribute("InTrade") then RemotesFolder.NotificationEvent:FireClient(player, "That player is busy.", "Error") return end
+
+		-- [[ FIX: Removed fragile InTrade checks. Relies strictly on ActiveTrades dictionary. ]]
+		if GetTradeForPlayer(target) then 
+			RemotesFolder.NotificationEvent:FireClient(player, "That player is currently busy.", "Error") 
+			return 
+		end
 
 		if not TradeRequests[target.UserId] then TradeRequests[target.UserId] = {} end
 		TradeRequests[target.UserId][player.UserId] = true
@@ -201,15 +201,16 @@ RemotesFolder:WaitForChild("TradeAction").OnServerEvent:Connect(function(player,
 
 		TradeRequests[player.UserId][target.UserId] = nil
 
-		if GetTradeForPlayer(player) or GetTradeForPlayer(target) or player:GetAttribute("InTrade") or target:GetAttribute("InTrade") then 
+		-- [[ FIX: Clear ghost states securely if players aren't actually in ActiveTrades ]]
+		if GetTradeForPlayer(player) or GetTradeForPlayer(target) then 
 			RemotesFolder.NotificationEvent:FireClient(player, "One of the players is currently busy.", "Error")
 			return 
 		end
 
-		RemotesFolder.NotificationEvent:FireClient(target, player.Name .. " accepted your trade request!", "Success")
-
 		player:SetAttribute("InTrade", true)
 		target:SetAttribute("InTrade", true)
+
+		RemotesFolder.NotificationEvent:FireClient(target, player.Name .. " accepted your trade request!", "Success")
 
 		local newTradeId = HttpService:GenerateGUID(false)
 		ActiveTrades[newTradeId] = {
@@ -250,10 +251,7 @@ RemotesFolder:WaitForChild("TradeAction").OnServerEvent:Connect(function(player,
 		elseif action == "AddItem" then
 			local itemName = tostring(type(data) == "table" and data.Item or data)
 
-			-- [[ SPOOFING PREVENTION: Item MUST exist in the Database ]]
-			if not ItemData.Equipment[itemName] and not ItemData.Consumables[itemName] then
-				return 
-			end
+			if not ItemData.Equipment[itemName] and not ItemData.Consumables[itemName] then return end
 
 			local safeName = itemName:gsub("[^%w]", "") .. "Count"
 			local owned = player:GetAttribute(safeName) or 0

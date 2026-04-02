@@ -73,14 +73,13 @@ local function SwitchToPvPMenu(parentFrame)
 end
 
 function BattleTab.Init(parentFrame)
-	local DECALS = { Modes = { Nightmare="rbxassetid://0", Expeditions="rbxassetid://0", Paths="rbxassetid://0", PvP="rbxassetid://0", Raid="rbxassetid://0", WorldBoss="rbxassetid://0" }, Bosses = { ["Frenzied Beast"]="rbxassetid://0", ["Abyssal Armored"]="rbxassetid://0", ["Doomsday Apparition"]="rbxassetid://0", ["Raid_Part1"]="rbxassetid://0", ["Raid_Part2"]="rbxassetid://0", ["Raid_Part3"]="rbxassetid://0", ["Raid_Part4"]="rbxassetid://0", ["Raid_Part5"]="rbxassetid://0", ["Raid_Part8"]="rbxassetid://0", ["Rod Reiss Titan"]="rbxassetid://0", ["Lara Tybur"]="rbxassetid://0", ["Doomsday Titan"]="rbxassetid://0", ["Ymir Fritz"]="rbxassetid://0" } }
+	local DECALS = { Modes = { Nightmare="rbxassetid://90132878979603", Expeditions="rbxassetid://114506098039778", Paths="rbxassetid://90938848776194", PvP="rbxassetid://100826303284945", Raid="rbxassetid://119392967268687", WorldBoss="rbxassetid://129655150803684" }, Bosses = { ["Frenzied Beast"]="rbxassetid://126246803477895", ["Abyssal Armored"]="rbxassetid://75593809803541", ["Doomsday Apparition"]="rbxassetid://114493300912789", ["Raid_Part1"]="rbxassetid://118182722089835", ["Raid_Part2"]="rbxassetid://127437496013300", ["Raid_Part3"]="rbxassetid://95511063358417", ["Raid_Part4"]="rbxassetid://92481334765869", ["Raid_Part5"]="rbxassetid://77055155553118", ["Raid_Part8"]="rbxassetid://82958903182689", ["Rod Reiss Titan"]="rbxassetid://119392967268687", ["Lara Tybur"]="rbxassetid://92481334765869", ["Doomsday Titan"]="rbxassetid://77055155553118", ["Ymir Fritz"]="rbxassetid://129655150803684" } }
 
 	TransitionOverlay = Instance.new("Frame", parentFrame.Parent); TransitionOverlay.Name = "BattleTransition"; TransitionOverlay.Size = UDim2.new(1, 0, 1, 0); TransitionOverlay.BackgroundColor3 = Color3.new(0, 0, 0); TransitionOverlay.BackgroundTransparency = 1; TransitionOverlay.ZIndex = 1000; TransitionOverlay.Visible = false
 	TransitionText = Instance.new("TextLabel", TransitionOverlay); TransitionText.Size = UDim2.new(1, 0, 0, 50); TransitionText.Position = UDim2.new(0, 0, 0.5, -25); TransitionText.BackgroundTransparency = 1; TransitionText.Font = Enum.Font.GothamBlack; TransitionText.TextColor3 = Color3.fromRGB(255, 215, 100); TransitionText.TextSize = 22; TransitionText.TextTransparency = 1
 
 	MainFrame = Instance.new("Frame", parentFrame); MainFrame.Name = "BattleFrame"; MainFrame.Size = UDim2.new(1, 0, 1, 0); MainFrame.BackgroundTransparency = 1; MainFrame.Visible = false
-	TopNav = Instance.new("Frame", MainFrame); TopNav.Size = UDim2.new(1, 0, 0, 50); TopNav.BackgroundTransparency = 1
-	local navLayout = Instance.new("UIListLayout", TopNav); navLayout.FillDirection = Enum.FillDirection.Horizontal; navLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center; navLayout.VerticalAlignment = Enum.VerticalAlignment.Center; navLayout.Padding = UDim.new(0, 15)
+	TopNav = Instance.new("Frame", MainFrame); TopNav.Size = UDim2.new(1, 0, 0, 50); TopNav.BackgroundTransparency = 1; local navLayout = Instance.new("UIListLayout", TopNav); navLayout.FillDirection = Enum.FillDirection.Horizontal; navLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center; navLayout.VerticalAlignment = Enum.VerticalAlignment.Center; navLayout.Padding = UDim.new(0, 15)
 
 	ContentArea = Instance.new("Frame", MainFrame); ContentArea.Size = UDim2.new(1, 0, 1, -50); ContentArea.Position = UDim2.new(0, 0, 0, 50); ContentArea.BackgroundTransparency = 1
 
@@ -97,13 +96,18 @@ function BattleTab.Init(parentFrame)
 
 	CreateSubNavBtn("Campaign", "CAMPAIGN"); CreateSubNavBtn("Modes", "MODES")
 
-	SubTabs["Campaign"] = Instance.new("ScrollingFrame", ContentArea); SubTabs["Campaign"].Size = UDim2.new(1, 0, 1, 0); SubTabs["Campaign"].BackgroundTransparency = 1; SubTabs["Campaign"].ScrollBarThickness = 0; SubTabs["Campaign"].Visible = true
-	local CampContainer = Instance.new("Frame", SubTabs["Campaign"]); CampContainer.Size = UDim2.new(0.95, 0, 0, 350); CampContainer.Position = UDim2.new(0.025, 0, 0, 20); CampContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25); Instance.new("UICorner", CampContainer).CornerRadius = UDim.new(0, 12); Instance.new("UIStroke", CampContainer).Color = Color3.fromRGB(60, 60, 70)
-	local CampImage = Instance.new("ImageLabel", CampContainer); CampImage.Size = UDim2.new(1, 0, 0.5, 0); CampImage.BackgroundColor3 = Color3.fromRGB(15, 15, 18); CampImage.Image = "rbxassetid://0"; Instance.new("UICorner", CampImage).CornerRadius = UDim.new(0, 12)
-	local CampTitle = Instance.new("TextLabel", CampContainer); CampTitle.Size = UDim2.new(1, -30, 0, 30); CampTitle.Position = UDim2.new(0, 15, 0.5, 15); CampTitle.BackgroundTransparency = 1; CampTitle.Font = Enum.Font.GothamBlack; CampTitle.TextSize = 22; CampTitle.TextColor3 = Color3.fromRGB(255, 255, 255); CampTitle.TextXAlignment = Enum.TextXAlignment.Left; CampTitle.Text = "CONTINUE STORY"
-	local CampDesc = Instance.new("TextLabel", CampContainer); CampDesc.Size = UDim2.new(1, -30, 0, 50); CampDesc.Position = UDim2.new(0, 15, 0.5, 45); CampDesc.BackgroundTransparency = 1; CampDesc.Font = Enum.Font.GothamMedium; CampDesc.TextSize = 14; CampDesc.TextColor3 = Color3.fromRGB(180, 180, 180); CampDesc.TextXAlignment = Enum.TextXAlignment.Left; CampDesc.TextYAlignment = Enum.TextYAlignment.Top; CampDesc.TextWrapped = true; CampDesc.Text = "Pick up right where you left off. The fate of the walls depends on your next move."
-	local PlayCampBtn = Instance.new("TextButton", CampContainer); PlayCampBtn.Size = UDim2.new(0.9, 0, 0, 50); PlayCampBtn.Position = UDim2.new(0.5, 0, 1, -15); PlayCampBtn.AnchorPoint = Vector2.new(0.5, 1); PlayCampBtn.Font = Enum.Font.GothamBlack; PlayCampBtn.TextSize = 20; PlayCampBtn.TextColor3 = Color3.fromRGB(255, 255, 255); PlayCampBtn.Text = "DEPLOY"
-	ApplyButtonGradient(PlayCampBtn, Color3.fromRGB(60, 140, 60), Color3.fromRGB(30, 80, 30), Color3.fromRGB(40, 100, 40))
+	-- [[ FIX: 100% Relative Sizing for Campaign so it never clips or scrolls ]]
+	SubTabs["Campaign"] = Instance.new("Frame", ContentArea); SubTabs["Campaign"].Size = UDim2.new(1, 0, 1, 0); SubTabs["Campaign"].BackgroundTransparency = 1; SubTabs["Campaign"].Visible = true
+
+	local CampContainer = Instance.new("Frame", SubTabs["Campaign"]); CampContainer.Size = UDim2.new(0.92, 0, 0.9, 0); CampContainer.Position = UDim2.new(0.5, 0, 0.5, 0); CampContainer.AnchorPoint = Vector2.new(0.5, 0.5); CampContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25); Instance.new("UICorner", CampContainer).CornerRadius = UDim.new(0, 12); Instance.new("UIStroke", CampContainer).Color = Color3.fromRGB(60, 60, 70)
+	local CampImage = Instance.new("ImageLabel", CampContainer); CampImage.Size = UDim2.new(1, 0, 0.45, 0); CampImage.BackgroundColor3 = Color3.fromRGB(15, 15, 18); CampImage.Image = "rbxassetid://80153476985849"; CampImage.ScaleType = Enum.ScaleType.Crop; Instance.new("UICorner", CampImage).CornerRadius = UDim.new(0, 12)
+
+	local CampTitle = Instance.new("TextLabel", CampContainer); CampTitle.Size = UDim2.new(1, -30, 0.15, 0); CampTitle.Position = UDim2.new(0, 15, 0.45, 5); CampTitle.BackgroundTransparency = 1; CampTitle.Font = Enum.Font.GothamBlack; CampTitle.TextSize = 20; CampTitle.TextColor3 = Color3.fromRGB(255, 255, 255); CampTitle.TextScaled = true; CampTitle.TextXAlignment = Enum.TextXAlignment.Left; CampTitle.Text = "CONTINUE STORY"
+	local tConstraint = Instance.new("UITextSizeConstraint", CampTitle); tConstraint.MaxTextSize = 20; tConstraint.MinTextSize = 14
+
+	local CampDesc = Instance.new("TextLabel", CampContainer); CampDesc.Size = UDim2.new(1, -30, 0.25, 0); CampDesc.Position = UDim2.new(0, 15, 0.6, 0); CampDesc.BackgroundTransparency = 1; CampDesc.Font = Enum.Font.GothamMedium; CampDesc.TextSize = 13; CampDesc.TextColor3 = Color3.fromRGB(180, 180, 180); CampDesc.TextXAlignment = Enum.TextXAlignment.Left; CampDesc.TextYAlignment = Enum.TextYAlignment.Top; CampDesc.TextWrapped = true; CampDesc.Text = "Pick up right where you left off. The fate of the walls depends on your next move."
+
+	local PlayCampBtn = Instance.new("TextButton", CampContainer); PlayCampBtn.Size = UDim2.new(0.9, 0, 0.12, 0); PlayCampBtn.Position = UDim2.new(0.5, 0, 0.95, 0); PlayCampBtn.AnchorPoint = Vector2.new(0.5, 1); PlayCampBtn.Font = Enum.Font.GothamBlack; PlayCampBtn.TextSize = 18; PlayCampBtn.TextColor3 = Color3.fromRGB(255, 255, 255); PlayCampBtn.Text = "DEPLOY"; ApplyButtonGradient(PlayCampBtn, Color3.fromRGB(60, 140, 60), Color3.fromRGB(30, 80, 30), Color3.fromRGB(40, 100, 40))
 	PlayCampBtn.MouseButton1Click:Connect(function() PlayTransition("DEPLOYING TO STORY...", function() Network:WaitForChild("CombatAction"):FireServer("EngageStory") end) end)
 
 	player.AttributeChanged:Connect(function(attr) if attr == "CurrentPart" then CampTitle.Text = "CHAPTER " .. (player:GetAttribute("CurrentPart") or 1) .. ": CONTINUE STORY" end end)
@@ -112,14 +116,13 @@ function BattleTab.Init(parentFrame)
 	ModesContainer = Instance.new("CanvasGroup", SubTabs["Modes"]); ModesContainer.Size = UDim2.new(1, 0, 1, 0); ModesContainer.BackgroundTransparency = 1
 	SelectionContainer = Instance.new("CanvasGroup", SubTabs["Modes"]); SelectionContainer.Size = UDim2.new(1, 0, 1, 0); SelectionContainer.BackgroundTransparency = 1; SelectionContainer.Visible = false
 
-	BackBtn = Instance.new("TextButton", SelectionContainer); BackBtn.Size = UDim2.new(0, 120, 0, 35); BackBtn.Position = UDim2.new(0, 15, 0, 10); BackBtn.Font = Enum.Font.GothamBold; BackBtn.TextSize = 12; BackBtn.TextColor3 = Color3.fromRGB(255, 255, 255); BackBtn.Text = "<- BACK"
-	ApplyButtonGradient(BackBtn, Color3.fromRGB(60, 60, 70), Color3.fromRGB(30, 30, 40), Color3.fromRGB(80, 80, 90))
+	BackBtn = Instance.new("TextButton", SelectionContainer); BackBtn.Size = UDim2.new(0, 120, 0, 35); BackBtn.Position = UDim2.new(0, 15, 0, 10); BackBtn.Font = Enum.Font.GothamBold; BackBtn.TextSize = 12; BackBtn.TextColor3 = Color3.fromRGB(255, 255, 255); BackBtn.Text = "<- BACK"; ApplyButtonGradient(BackBtn, Color3.fromRGB(60, 60, 70), Color3.fromRGB(30, 30, 40), Color3.fromRGB(80, 80, 90))
 	BackBtn.MouseButton1Click:Connect(function() FadeSwitch(SelectionContainer, ModesContainer) end)
 
 	SelectionTitle = Instance.new("TextLabel", SelectionContainer); SelectionTitle.Size = UDim2.new(1, -150, 0, 35); SelectionTitle.Position = UDim2.new(0, 140, 0, 10); SelectionTitle.BackgroundTransparency = 1; SelectionTitle.Font = Enum.Font.GothamBlack; SelectionTitle.TextSize = 22; SelectionTitle.TextColor3 = Color3.fromRGB(255, 215, 100); SelectionTitle.TextXAlignment = Enum.TextXAlignment.Left
 
 	SelectionCarousel = Instance.new("ScrollingFrame", SelectionContainer); SelectionCarousel.Size = UDim2.new(1, 0, 1, -55); SelectionCarousel.Position = UDim2.new(0, 0, 0, 55); SelectionCarousel.BackgroundTransparency = 1; SelectionCarousel.ScrollingDirection = Enum.ScrollingDirection.Y; SelectionCarousel.ScrollBarThickness = 0
-	local sGridLayout = Instance.new("UIGridLayout", SelectionCarousel); sGridLayout.CellSize = UDim2.new(0.46, 0, 0, 160); sGridLayout.CellPadding = UDim2.new(0.04, 0, 0, 15); sGridLayout.SortOrder = Enum.SortOrder.LayoutOrder; sGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	local sGridLayout = Instance.new("UIGridLayout", SelectionCarousel); sGridLayout.CellSize = UDim2.new(0.46, 0, 0, 240); sGridLayout.CellPadding = UDim2.new(0.04, 0, 0, 15); sGridLayout.SortOrder = Enum.SortOrder.LayoutOrder; sGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	local sPad = Instance.new("UIPadding", SelectionCarousel); sPad.PaddingTop = UDim.new(0, 5); sPad.PaddingBottom = UDim.new(0, 20)
 	sGridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() SelectionCarousel.CanvasSize = UDim2.new(0, 0, 0, sGridLayout.AbsoluteContentSize.Y + 30) end)
 
@@ -132,10 +135,12 @@ function BattleTab.Init(parentFrame)
 			local data = dataTable[key]
 			local card = Instance.new("TextButton", SelectionCarousel); card.BackgroundColor3 = Color3.fromRGB(15, 15, 18); card.LayoutOrder = layoutOrder; card.ClipsDescendants = true; Instance.new("UICorner", card).CornerRadius = UDim.new(0, 8); Instance.new("UIStroke", card).Color = Color3.fromRGB(60, 60, 70)
 			local bgImg = Instance.new("ImageLabel", card); bgImg.Size = UDim2.new(1, 0, 1, 0); bgImg.BackgroundTransparency = 1; bgImg.Image = DECALS.Bosses[key] or "rbxassetid://0"; bgImg.ScaleType = Enum.ScaleType.Crop
-			local gradFrame = Instance.new("Frame", card); gradFrame.Size = UDim2.new(1, 0, 1, 0); gradFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); gradFrame.BorderSizePixel = 0; local grad = Instance.new("UIGradient", gradFrame); grad.Rotation = 90; grad.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0, 0.8), NumberSequenceKeypoint.new(0.5, 0.8), NumberSequenceKeypoint.new(0.7, 0.1), NumberSequenceKeypoint.new(1, 0)}
-			local nLbl = Instance.new("TextLabel", card); nLbl.Size = UDim2.new(1, -10, 0, 25); nLbl.Position = UDim2.new(0, 5, 0, 5); nLbl.BackgroundTransparency = 1; nLbl.Font = Enum.Font.GothamBlack; nLbl.TextColor3 = Color3.fromRGB(255, 255, 255); nLbl.TextSize = 14; nLbl.TextScaled = true; nLbl.TextXAlignment = Enum.TextXAlignment.Left; nLbl.Text = data.Name or key
-			local rLbl = Instance.new("TextLabel", card); rLbl.Size = UDim2.new(1, -10, 0, 20); rLbl.Position = UDim2.new(0, 5, 0, 30); rLbl.BackgroundTransparency = 1; rLbl.Font = Enum.Font.GothamBold; rLbl.TextColor3 = Color3.fromRGB(200, 200, 200); rLbl.TextSize = 10; rLbl.TextXAlignment = Enum.TextXAlignment.Left; rLbl.Text = "Req: Pres. " .. (data.Req or 0)
-			local dLbl = Instance.new("TextLabel", card); dLbl.Size = UDim2.new(1, -10, 0, 40); dLbl.Position = UDim2.new(0, 5, 0, 50); dLbl.BackgroundTransparency = 1; dLbl.Font = Enum.Font.GothamMedium; dLbl.TextColor3 = Color3.fromRGB(180, 180, 180); dLbl.TextSize = 9; dLbl.TextXAlignment = Enum.TextXAlignment.Left; dLbl.TextYAlignment = Enum.TextYAlignment.Top; dLbl.TextWrapped = true; local descText = data.Desc or ("HP: " .. (data.Health or "Unknown")); if data.Drops then descText = descText .. "\nRewards: +" .. (data.Drops.Dews or 0) .. " Dews" end; dLbl.Text = descText
+			local gradFrame = Instance.new("Frame", card); gradFrame.Size = UDim2.new(1, 0, 1, 0); gradFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); gradFrame.BorderSizePixel = 0; local grad = Instance.new("UIGradient", gradFrame); grad.Rotation = 90; grad.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.4, 1), NumberSequenceKeypoint.new(0.7, 0.2), NumberSequenceKeypoint.new(1, 0)}
+
+			local nLbl = Instance.new("TextLabel", card); nLbl.Size = UDim2.new(1, -10, 0, 25); nLbl.Position = UDim2.new(0, 5, 1, -125); nLbl.BackgroundTransparency = 1; nLbl.Font = Enum.Font.GothamBlack; nLbl.TextColor3 = Color3.fromRGB(255, 255, 255); nLbl.TextSize = 14; nLbl.TextScaled = true; nLbl.TextXAlignment = Enum.TextXAlignment.Left; nLbl.Text = data.Name or key
+			local rLbl = Instance.new("TextLabel", card); rLbl.Size = UDim2.new(1, -10, 0, 20); rLbl.Position = UDim2.new(0, 5, 1, -100); rLbl.BackgroundTransparency = 1; rLbl.Font = Enum.Font.GothamBold; rLbl.TextColor3 = Color3.fromRGB(200, 200, 200); rLbl.TextSize = 10; rLbl.TextXAlignment = Enum.TextXAlignment.Left; rLbl.Text = "Req: Pres. " .. (data.Req or 0)
+			local dLbl = Instance.new("TextLabel", card); dLbl.Size = UDim2.new(1, -10, 0, 40); dLbl.Position = UDim2.new(0, 5, 1, -80); dLbl.BackgroundTransparency = 1; dLbl.Font = Enum.Font.GothamMedium; dLbl.TextColor3 = Color3.fromRGB(180, 180, 180); dLbl.TextSize = 9; dLbl.TextXAlignment = Enum.TextXAlignment.Left; dLbl.TextYAlignment = Enum.TextYAlignment.Top; dLbl.TextWrapped = true; local descText = data.Desc or ("HP: " .. (data.Health or "Unknown")); if data.Drops then descText = descText .. "\nRewards: +" .. (data.Drops.Dews or 0) .. " Dews" end; dLbl.Text = descText
+
 			local pBtn = Instance.new("TextButton", card); pBtn.Size = UDim2.new(0.9, 0, 0, 30); pBtn.Position = UDim2.new(0.5, 0, 1, -5); pBtn.AnchorPoint = Vector2.new(0.5, 1); pBtn.Font = Enum.Font.GothamBlack; pBtn.TextSize = 14; pBtn.TextColor3 = Color3.fromRGB(255, 255, 255); pBtn.Text = "DEPLOY"; ApplyButtonGradient(pBtn, Color3.fromRGB(200, 60, 60), Color3.fromRGB(100, 30, 30), Color3.fromRGB(80, 20, 20)); pBtn.ZIndex = 5
 			pBtn.MouseButton1Click:Connect(function() PlayTransition("DEPLOYING...", function() onPlayFunc(key) end) end)
 			layoutOrder += 1
@@ -143,14 +148,15 @@ function BattleTab.Init(parentFrame)
 		FadeSwitch(ModesContainer, SelectionContainer)
 	end
 
-	ModesCarousel = Instance.new("ScrollingFrame", ModesContainer); ModesCarousel.Size = UDim2.new(1, 0, 1, -60); ModesCarousel.Position = UDim2.new(0, 0, 0, 0); ModesCarousel.BackgroundTransparency = 1; ModesCarousel.ScrollingDirection = Enum.ScrollingDirection.Y; ModesCarousel.ScrollBarThickness = 0
-	local carouselLayout = Instance.new("UIGridLayout", ModesCarousel); carouselLayout.CellSize = UDim2.new(0.31, 0, 0, 150); carouselLayout.CellPadding = UDim2.new(0.02, 0, 0, 15); carouselLayout.SortOrder = Enum.SortOrder.LayoutOrder; carouselLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	local cPad = Instance.new("UIPadding", ModesCarousel); cPad.PaddingTop = UDim.new(0, 10); cPad.PaddingBottom = UDim.new(0, 20)
+	ModesCarousel = Instance.new("ScrollingFrame", ModesContainer); ModesCarousel.Size = UDim2.new(1, 0, 1, 0); ModesCarousel.Position = UDim2.new(0, 0, 0, 0); ModesCarousel.BackgroundTransparency = 1; ModesCarousel.ScrollingDirection = Enum.ScrollingDirection.Y; ModesCarousel.ScrollBarThickness = 0
+	local carouselLayout = Instance.new("UIGridLayout", ModesCarousel); carouselLayout.CellSize = UDim2.new(0.46, 0, 0, 220); carouselLayout.CellPadding = UDim2.new(0.04, 0, 0, 15); carouselLayout.SortOrder = Enum.SortOrder.LayoutOrder; carouselLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	local cPad = Instance.new("UIPadding", ModesCarousel); cPad.PaddingTop = UDim.new(0, 10)
+	cPad.PaddingBottom = UDim.new(0, 60) -- [[ FIX: Extra padding to prevent Party Button from obscuring cards ]]
 
 	local function CreateModeCard(name, desc, imgId, layoutOrder, onClickFunc)
 		local card = Instance.new("TextButton", ModesCarousel); card.LayoutOrder = layoutOrder; card.Text = ""; card.AutoButtonColor = false; card.BackgroundColor3 = Color3.fromRGB(15, 15, 18); card.ClipsDescendants = true; Instance.new("UICorner", card).CornerRadius = UDim.new(0, 10); local stroke = Instance.new("UIStroke", card); stroke.Color = Color3.fromRGB(60, 60, 70); stroke.Thickness = 2
 		local bgImg = Instance.new("ImageLabel", card); bgImg.Size = UDim2.new(1, 0, 1, 0); bgImg.BackgroundTransparency = 1; bgImg.Image = imgId; bgImg.ScaleType = Enum.ScaleType.Crop
-		local gradFrame = Instance.new("Frame", card); gradFrame.Size = UDim2.new(1, 0, 1, 0); gradFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); gradFrame.BorderSizePixel = 0; local grad = Instance.new("UIGradient", gradFrame); grad.Rotation = 90; grad.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0, 0.6), NumberSequenceKeypoint.new(0.5, 0.8), NumberSequenceKeypoint.new(0.7, 0.1), NumberSequenceKeypoint.new(1, 0)}
+		local gradFrame = Instance.new("Frame", card); gradFrame.Size = UDim2.new(1, 0, 1, 0); gradFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0); gradFrame.BorderSizePixel = 0; local grad = Instance.new("UIGradient", gradFrame); grad.Rotation = 90; grad.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.4, 1), NumberSequenceKeypoint.new(0.7, 0.2), NumberSequenceKeypoint.new(1, 0)}
 		local title = Instance.new("TextLabel", card); title.Size = UDim2.new(1, -10, 0, 30); title.Position = UDim2.new(0, 5, 1, -75); title.BackgroundTransparency = 1; title.Font = Enum.Font.GothamBlack; title.TextSize = 14; title.TextColor3 = Color3.fromRGB(255, 255, 255); title.TextScaled = true; title.TextXAlignment = Enum.TextXAlignment.Center; title.Text = name
 		local descLbl = Instance.new("TextLabel", card); descLbl.Size = UDim2.new(1, -10, 0, 40); descLbl.Position = UDim2.new(0, 5, 1, -45); descLbl.BackgroundTransparency = 1; descLbl.Font = Enum.Font.GothamBold; descLbl.TextSize = 9; descLbl.TextColor3 = Color3.fromRGB(180, 180, 180); descLbl.TextXAlignment = Enum.TextXAlignment.Center; descLbl.TextYAlignment = Enum.TextYAlignment.Top; descLbl.TextWrapped = true; descLbl.Text = desc
 		card.MouseButton1Click:Connect(onClickFunc)
@@ -162,13 +168,15 @@ function BattleTab.Init(parentFrame)
 	CreateModeCard("PVP ARENA", "Combat other players.", DECALS.Modes.PvP, 4, function() SwitchToPvPMenu(parentFrame) end)
 	CreateModeCard("RAIDS", "Deploy your party against Giants.", DECALS.Modes.Raid, 5, function() OpenSelectionMenu("SELECT RAID", EnemyData.RaidBosses, function(raidId) Network:WaitForChild("RaidAction"):FireServer("DeployParty", { RaidId = raidId }) end) end)
 	CreateModeCard("WORLD BOSS", "Intercept catastrophic threats.", DECALS.Modes.WorldBoss, 6, function() OpenSelectionMenu("SELECT WORLD BOSS", EnemyData.WorldBosses, function(bossId) Network:WaitForChild("CombatAction"):FireServer("EngageWorldBoss", { BossId = bossId }) end) end)
-	carouselLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() ModesCarousel.CanvasSize = UDim2.new(0, 0, 0, carouselLayout.AbsoluteContentSize.Y + 30) end)
+	carouselLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() ModesCarousel.CanvasSize = UDim2.new(0, 0, 0, carouselLayout.AbsoluteContentSize.Y + 80) end)
 
-	PartyToggleBtn = Instance.new("TextButton", ModesContainer); PartyToggleBtn.Size = UDim2.new(0, 160, 0, 40); PartyToggleBtn.Position = UDim2.new(0.5, 0, 1, -10); PartyToggleBtn.AnchorPoint = Vector2.new(0.5, 1); PartyToggleBtn.Font = Enum.Font.GothamBlack; PartyToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); PartyToggleBtn.TextSize = 14; PartyToggleBtn.Text = "PARTY / CO-OP"
+	-- [[ FIX: Party Button is now a discreet floating button in the bottom right ]]
+	PartyToggleBtn = Instance.new("TextButton", ModesContainer); PartyToggleBtn.Size = UDim2.new(0, 120, 0, 35); PartyToggleBtn.Position = UDim2.new(1, -10, 1, -10); PartyToggleBtn.AnchorPoint = Vector2.new(1, 1); PartyToggleBtn.Font = Enum.Font.GothamBlack; PartyToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); PartyToggleBtn.TextSize = 12; PartyToggleBtn.Text = "PARTY"
+	PartyToggleBtn.ZIndex = 100
 	ApplyButtonGradient(PartyToggleBtn, Color3.fromRGB(80, 80, 90), Color3.fromRGB(40, 40, 50), Color3.fromRGB(60, 60, 70))
 
-	-- [[ FIX: Party Container actively blocks background clicks and updates dynamically ]]
-	PartyContainer = Instance.new("Frame", SubTabs["Modes"]); PartyContainer.Size = UDim2.new(0.85, 0, 0.7, 0); PartyContainer.Position = UDim2.new(0.5, 0, 0.5, 0); PartyContainer.AnchorPoint = Vector2.new(0.5, 0.5); PartyContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25); PartyContainer.Visible = false; PartyContainer.ZIndex = 500; PartyContainer.Active = true 
+	-- [[ FIX: Slimmed down Party Container so it fits cleanly on mobile ]]
+	PartyContainer = Instance.new("Frame", SubTabs["Modes"]); PartyContainer.Size = UDim2.new(0, 280, 0, 360); PartyContainer.Position = UDim2.new(0.5, 0, 0.5, 0); PartyContainer.AnchorPoint = Vector2.new(0.5, 0.5); PartyContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25); PartyContainer.Visible = false; PartyContainer.ZIndex = 500; PartyContainer.Active = true 
 	Instance.new("UICorner", PartyContainer).CornerRadius = UDim.new(0, 12); Instance.new("UIStroke", PartyContainer).Color = Color3.fromRGB(80, 120, 200); Instance.new("UIStroke", PartyContainer).Thickness = 2
 
 	local pHeader = Instance.new("TextLabel", PartyContainer); pHeader.Size = UDim2.new(1, 0, 0, 40); pHeader.BackgroundTransparency = 1; pHeader.Font = Enum.Font.GothamBlack; pHeader.TextColor3 = Color3.fromRGB(255, 215, 100); pHeader.TextSize = 16; pHeader.Text = "PARTY MANAGEMENT"
@@ -188,7 +196,6 @@ function BattleTab.Init(parentFrame)
 
 	TweenService:Create(SubBtns["Campaign"], TweenInfo.new(0), {TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundColor3 = Color3.fromRGB(80, 80, 90)}):Play()
 
-	-- [[ FIX: Party Prompt Listener (Handles dynamically updating the list and showing invites) ]]
 	Network:WaitForChild("PartyUpdate").OnClientEvent:Connect(function(action, data)
 		if action == "UpdateList" then
 			for _, child in ipairs(pMemScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
